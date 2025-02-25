@@ -1,17 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import 'chart.js/auto'
-
-interface GraphData {
-  tank1Level: number[]
-  tank2Level: number[]
-  controllerOutput: number[]
-  pumpFlow: number[]
-  setpoint: number[]
-  labels: string[]
-}
+import { Card } from '@/components/ui/Card'
 
 interface SimulationGraphsProps {
   tank1Level: number
@@ -30,117 +22,124 @@ export default function SimulationGraphs({
   pumpFlow,
   setpoint
 }: SimulationGraphsProps) {
-  const [data, setData] = useState<GraphData>({
-    tank1Level: [],
-    tank2Level: [],
-    controllerOutput: [],
-    pumpFlow: [],
-    setpoint: [],
-    labels: []
-  })
+  const [time, setTime] = useState<number[]>([])
+  const [tank1Data, setTank1Data] = useState<number[]>([])
+  const [tank2Data, setTank2Data] = useState<number[]>([])
+  const [outputData, setOutputData] = useState<number[]>([])
+  const [setpointData, setSetpointData] = useState<number[]>([])
+  const [pumpData, setPumpData] = useState<number[]>([])
 
-  // Update graph data
+  // Update data points
   useEffect(() => {
-    setData(prev => {
-      const newLabels = [...prev.labels, new Date().toLocaleTimeString()]
-      if (newLabels.length > MAX_POINTS) {
-        newLabels.shift()
-      }
+    const updateData = (prevData: number[], newValue: number) => {
+      const newData = [...prevData, newValue]
+      if (newData.length > MAX_POINTS) newData.shift()
+      return newData
+    }
 
-      const updateArray = (arr: number[], newValue: number) => {
-        const newArr = [...arr, newValue]
-        if (newArr.length > MAX_POINTS) {
-          newArr.shift()
-        }
-        return newArr
-      }
-
-      return {
-        tank1Level: updateArray(prev.tank1Level, tank1Level),
-        tank2Level: updateArray(prev.tank2Level, tank2Level),
-        controllerOutput: updateArray(prev.controllerOutput, controllerOutput),
-        pumpFlow: updateArray(prev.pumpFlow, pumpFlow),
-        setpoint: updateArray(prev.setpoint, setpoint),
-        labels: newLabels
-      }
+    setTime(prev => {
+      const newTime = [...prev, prev.length ? prev[prev.length - 1] + 1 : 0]
+      if (newTime.length > MAX_POINTS) newTime.shift()
+      return newTime
     })
+
+    setTank1Data(prev => updateData(prev, tank1Level))
+    setTank2Data(prev => updateData(prev, tank2Level))
+    setOutputData(prev => updateData(prev, controllerOutput))
+    setSetpointData(prev => updateData(prev, setpoint))
+    setPumpData(prev => updateData(prev, pumpFlow))
   }, [tank1Level, tank2Level, controllerOutput, pumpFlow, setpoint])
 
-  const options = {
+  const commonOptions = {
     responsive: true,
-    animation: {
-      duration: 0
-    },
+    animation: { duration: 0 } as const,
     scales: {
-      y: {
-        beginAtZero: true,
-        max: 100,
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)'
-        },
-        ticks: {
-          color: 'rgba(255, 255, 255, 0.8)'
-        }
-      },
       x: {
-        display: false
+        type: 'linear' as const,
+        display: true,
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+        ticks: { color: 'rgba(255, 255, 255, 0.5)' }
+      },
+      y: {
+        display: true,
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+        ticks: { color: 'rgba(255, 255, 255, 0.5)' },
+        max: 100,
+        min: 0
       }
     },
     plugins: {
       legend: {
         position: 'top' as const,
-        labels: {
-          color: 'rgba(255, 255, 255, 0.8)'
-        }
+        labels: { color: 'rgba(255, 255, 255, 0.7)' }
       }
     }
   }
 
-  const chartData = {
-    labels: data.labels,
+  const tankLevelsData = {
+    labels: time,
     datasets: [
       {
         label: 'Tank 1 Level',
-        data: data.tank1Level,
+        data: tank1Data,
         borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.5)',
-        tension: 0.3
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4
       },
       {
         label: 'Tank 2 Level',
-        data: data.tank2Level,
-        borderColor: 'rgb(16, 185, 129)',
-        backgroundColor: 'rgba(16, 185, 129, 0.5)',
-        tension: 0.3
-      },
+        data: tank2Data,
+        borderColor: 'rgb(168, 85, 247)',
+        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+        tension: 0.4
+      }
+    ]
+  }
+
+  const controlSignalsData = {
+    labels: time,
+    datasets: [
       {
         label: 'Controller Output',
-        data: data.controllerOutput,
-        borderColor: 'rgb(249, 115, 22)',
-        backgroundColor: 'rgba(249, 115, 22, 0.5)',
-        tension: 0.3
-      },
-      {
-        label: 'Pump Flow',
-        data: data.pumpFlow,
-        borderColor: 'rgb(139, 92, 246)',
-        backgroundColor: 'rgba(139, 92, 246, 0.5)',
-        tension: 0.3
+        data: outputData,
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4
       },
       {
         label: 'Setpoint',
-        data: data.setpoint,
-        borderColor: 'rgb(239, 68, 68)',
-        backgroundColor: 'rgba(239, 68, 68, 0.5)',
-        borderDash: [5, 5],
-        tension: 0.3
+        data: setpointData,
+        borderColor: 'rgb(234, 179, 8)',
+        backgroundColor: 'rgba(234, 179, 8, 0.1)',
+        tension: 0.4
+      },
+      {
+        label: 'Pump Flow',
+        data: pumpData,
+        borderColor: 'rgb(168, 85, 247)',
+        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+        tension: 0.4
       }
     ]
   }
 
   return (
-    <div className="w-full h-[400px] bg-gray-900 rounded-lg p-4">
-      <Line options={options} data={chartData} />
+    <div className="space-y-6">
+      <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+          <h3 className="text-sm font-medium text-gray-300">Tank Levels</h3>
+        </div>
+        <Line data={tankLevelsData} options={commonOptions} />
+      </div>
+
+      <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
+          <h3 className="text-sm font-medium text-gray-300">Control Signals</h3>
+        </div>
+        <Line data={controlSignalsData} options={commonOptions} />
+      </div>
     </div>
   )
 } 

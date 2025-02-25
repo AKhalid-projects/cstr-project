@@ -35,7 +35,7 @@ export default function ScenarioSelector({ onSelect, disabled }: ScenarioSelecto
                   <div key={scenario.name} className="space-y-2">
                     <Button
                       variant="outline"
-                      className="w-full justify-start"
+                      className="w-full mt-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-500/20 transition-all"
                       onClick={() => onSelect(scenario.state)}
                       disabled={disabled}
                     >

@@ -3,7 +3,9 @@
 import Scene from './3d/Scene'
 import Tank3D from './3d/Tank3D'
 import LevelIndicator from './visualization/LevelIndicator'
+import { motion } from 'framer-motion'
 import { Card } from '@/components/ui/Card'
+import { Target } from 'lucide-react'
 
 interface SimulationProps {
   controlParameters: {
@@ -27,19 +29,16 @@ interface SimulationProps {
 }
 
 export default function Simulation({ controlParameters, systemParameters }: SimulationProps) {
-  // Convert heights to percentages for visualization
   const tank1LevelPercent = (systemParameters.tank1.height / systemParameters.tank1.maxHeight) * 100
   const tank2LevelPercent = (systemParameters.tank2.height / systemParameters.tank2.maxHeight) * 100
 
   return (
-    <Card className="bg-gray-800 border-gray-700 p-6">
-      <h2 className="text-2xl font-semibold text-white mb-6">Gravity Tanks Simulation</h2>
-
-      <div className="space-y-8">
+    <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur-sm overflow-hidden">
+      <div className="space-y-8 p-6">
         {/* 3D Visualization */}
         <div className="grid grid-cols-2 gap-8">
           {/* Upper Tank */}
-          <div className="aspect-square relative">
+          <div className="aspect-square relative bg-gray-900/50 rounded-lg backdrop-blur-sm border border-gray-700/50">
             <Scene>
               <Tank3D level={tank1LevelPercent} />
             </Scene>
@@ -47,26 +46,45 @@ export default function Simulation({ controlParameters, systemParameters }: Simu
           </div>
 
           {/* Lower Tank */}
-          <div className="aspect-square relative">
+          <div className="aspect-square relative bg-gray-900/50 rounded-lg backdrop-blur-sm border border-gray-700/50">
             <Scene>
               <Tank3D level={tank2LevelPercent} />
             </Scene>
             <LevelIndicator level={tank2LevelPercent} />
           </div>
         </div>
-      </div>
 
-      <div className="space-y-4 mt-4">
-        <div className="flex justify-between text-gray-300">
-          <span>Setpoint: {controlParameters.setpoint}%</span>
-          <span>Tank 1 Level: {tank1LevelPercent.toFixed(1)}%</span>
-          <span>Tank 2 Level: {tank2LevelPercent.toFixed(1)}%</span>
-        </div>
-        <div className="flex justify-between text-gray-300">
-          <span>Kp: {controlParameters.kp}</span>
-          <span>Ki: {controlParameters.ki}</span>
-          <span>Kd: {controlParameters.kd}</span>
-        </div>
+        {/* Status Display */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="grid grid-cols-2 gap-4 bg-gray-900/50 p-4 rounded-lg backdrop-blur-sm border border-gray-700/50"
+        >
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-gray-300">
+              <Target className="w-4 h-4 text-blue-400" />
+              <span>Target: {controlParameters.setpoint.toFixed(1)}%</span>
+            </div>
+            <div className="flex justify-between text-gray-300">
+              <span>Tank 1: {tank1LevelPercent.toFixed(1)}%</span>
+              <span>Tank 2: {tank2LevelPercent.toFixed(1)}%</span>
+            </div>
+          </div>
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between text-gray-300">
+              <span>Kp:</span>
+              <span className="font-mono text-blue-400">{controlParameters.kp.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-gray-300">
+              <span>Ki:</span>
+              <span className="font-mono text-purple-400">{controlParameters.ki.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-gray-300">
+              <span>Kd:</span>
+              <span className="font-mono text-green-400">{controlParameters.kd.toFixed(2)}</span>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </Card>
   )

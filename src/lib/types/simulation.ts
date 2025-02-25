@@ -29,11 +29,12 @@ export interface VisualizationProps {
 }
 
 export interface ControlProps {
+  label: string
   value: number
   onChange: (value: number) => void
   min?: number
   max?: number
   step?: number
   disabled?: boolean
-  label: string
+  className?: string
 } 

@@ -7,8 +7,8 @@ import { Navbar } from "@/components/layout/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CSTR Simulator",
-  description: "Interactive PID Control System Simulator",
+  title: "ProcessDynX",
+  description: "Interactive Process Control System Simulator",
 };
 
 export default function RootLayout({
