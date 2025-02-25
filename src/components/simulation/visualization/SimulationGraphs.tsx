@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import 'chart.js/auto'
-import { Card } from '@/components/ui/Card'
 
 interface SimulationGraphsProps {
   tank1Level: number

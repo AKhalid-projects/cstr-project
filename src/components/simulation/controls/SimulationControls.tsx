@@ -1,9 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Label } from '@/components/ui/label'
 import { ControlProps } from '@/lib/types/simulation'
 import ControlSlider from './ControlSlider'
 

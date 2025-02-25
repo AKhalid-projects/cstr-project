@@ -13,7 +13,7 @@ interface SceneProps {
   };
 }
 
-export default function Scene({ children, parameters }: SceneProps) {
+export default function Scene({ children }: SceneProps) {
   return (
     <div className="w-full h-full min-h-[400px] bg-gray-900 rounded-lg">
       <Canvas camera={{ position: [4, 0, 4], fov: 45 }}>

@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type */
 import * as React from "react"
 
-export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+/**
+ * Extends the standard textarea HTML attributes.
+ * This interface allows for future extension while maintaining type safety.
+ */
+export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, ...props }, ref) => {

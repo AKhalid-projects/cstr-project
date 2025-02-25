@@ -1,6 +1,5 @@
 'use client'
 
-import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { scenarioCategories } from '@/lib/utils/simulation-scenarios'
 import { SimulationState } from '@/lib/types/simulation'

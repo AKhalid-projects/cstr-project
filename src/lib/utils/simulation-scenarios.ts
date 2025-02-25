@@ -26,7 +26,9 @@ export const scenarioCategories: ScenarioCategory[] = [
             kp: 1.0,
             ki: 0.15,
             kd: 0,
-            setpoint: 50
+            setpoint: 50,
+            errorSum: 0,
+            lastError: 0
           },
           pumpFlow: 0
         }
@@ -40,7 +42,9 @@ export const scenarioCategories: ScenarioCategory[] = [
             kp: 0.5,
             ki: 0.08,
             kd: 0,
-            setpoint: 60
+            setpoint: 60,
+            errorSum: 0,
+            lastError: 0
           },
           pumpFlow: 2
         }
@@ -60,7 +64,9 @@ export const scenarioCategories: ScenarioCategory[] = [
             kp: 2.5,
             ki: 0.05,
             kd: 0.1,
-            setpoint: 50
+            setpoint: 50,
+            errorSum: 0,
+            lastError: 0
           },
           pumpFlow: 5
         }
@@ -74,7 +80,9 @@ export const scenarioCategories: ScenarioCategory[] = [
             kp: 1.2,
             ki: 0.1,
             kd: 0.15,
-            setpoint: 60
+            setpoint: 60,
+            errorSum: 0,
+            lastError: 0
           },
           pumpFlow: 0
         }
@@ -88,7 +96,9 @@ export const scenarioCategories: ScenarioCategory[] = [
             kp: 1.5,
             ki: 0.2,
             kd: 0.1,
-            setpoint: 70
+            setpoint: 70,
+            errorSum: 0,
+            lastError: 0
           },
           pumpFlow: 8
         }
@@ -108,7 +118,9 @@ export const scenarioCategories: ScenarioCategory[] = [
             kp: 1.0,
             ki: 0.1,
             kd: 0.05,
-            setpoint: 55
+            setpoint: 55,
+            errorSum: 0,
+            lastError: 0
           },
           pumpFlow: 6
         }
@@ -122,7 +134,9 @@ export const scenarioCategories: ScenarioCategory[] = [
             kp: 1.8,
             ki: 0.15,
             kd: 0.12,
-            setpoint: 65
+            setpoint: 65,
+            errorSum: 0,
+            lastError: 0
           },
           pumpFlow: 8
         }
@@ -136,7 +150,9 @@ export const scenarioCategories: ScenarioCategory[] = [
             kp: 1.3,
             ki: 0.18,
             kd: 0.08,
-            setpoint: 45
+            setpoint: 45,
+            errorSum: 0,
+            lastError: 0
           },
           pumpFlow: 10
         }

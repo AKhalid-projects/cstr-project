@@ -8,7 +8,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { GradientBackground } from '@/components/ui/gradient-background'
 import { Mail, MessageSquare, Phone, MapPin, Plus, Minus, Linkedin } from 'lucide-react'
 import { useState } from 'react'
-import Image from 'next/image'
 
 export default function ContactPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -34,7 +33,7 @@ export default function ContactPage() {
               Get in Touch
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Have questions about the CSTR Simulator? We're here to help.
+              Have questions about the CSTR Simulator? We&apos;re here to help.
             </p>
           </motion.div>
         </div>
@@ -177,7 +176,7 @@ export default function ContactPage() {
                 viewport={{ once: true }}
                 className="grid sm:grid-cols-2 gap-4"
               >
-                {contactMethods.map((method, index) => (
+                {contactMethods.map((method) => (
                   <Card 
                     key={method.title}
                     className="bg-gray-800/50 border-gray-700 p-6"

@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Card } from '@/components/ui/Card'
 import { GradientBackground } from '@/components/ui/gradient-background'
 import { ArrowRight, Code2, Beaker, Cpu, BookOpen, Check, Activity, Award, Factory, LineChart, Play } from 'lucide-react'
 import Link from 'next/link'
