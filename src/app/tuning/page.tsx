@@ -10,6 +10,10 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import SimulationControls from '@/components/simulation/controls/SimulationControls';
 import { initialState, calculateTankLevels } from '@/lib/utils/simulation-calculations'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import { ControlStrategy } from '@/lib/types/simulation';
+import ScenarioSelector from '@/components/simulation/scenarios/ScenarioSelector'
+import { SimulationState } from '@/lib/types/simulation'
 
 export default function TuningPage() {
     const { state, updateControlParams, updateState, isRunning, startSimulation, stopSimulation } = useSimulationState();
@@ -71,6 +75,40 @@ export default function TuningPage() {
         }
     };
 
+    const controlStrategies = [
+        { value: 'PID', label: 'PID Control' },
+        { value: 'PID_FEEDFORWARD', label: 'PID with Feed Forward' },
+        { value: 'PI', label: 'PI Control' }
+    ];
+
+    const handleStrategyChange = (value: string) => {
+        updateState({
+            controlStrategy: value as ControlStrategy,
+            controller: {
+                ...state.controller,
+                errorSum: 0,    // Reset integral term
+                lastError: 0    // Reset derivative term
+            }
+        });
+    };
+
+    const handleScenarioSelect = (scenarioState: Partial<SimulationState>) => {
+        updateState({
+            ...state,
+            ...scenarioState,
+            isRunning: false, // Reset simulation when changing scenario
+            tank1: { ...state.tank1, height: 0 }, // Reset tank levels
+            tank2: { ...state.tank2, height: 0 }
+        })
+        
+        // Update local state for sliders
+        if (scenarioState.controller) {
+            setKp(scenarioState.controller.kp.toString())
+            setKi(scenarioState.controller.ki.toString())
+            setKd(scenarioState.controller.kd.toString())
+        }
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
             <main className="max-w-7xl mx-auto px-4 py-16">
@@ -80,7 +118,7 @@ export default function TuningPage() {
                     transition={{ duration: 0.5 }}
                 >
                     <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-4xl font-bold text-white">PID Tuning Interface</h1>
+                        <h1 className="text-4xl font-bold text-white">Tuning Interface</h1>
                         <div className="space-x-4">
                             <Button
                                 variant={isRunning ? 'destructive' : 'default'}
@@ -100,7 +138,7 @@ export default function TuningPage() {
                     <div className="grid lg:grid-cols-2 gap-8">
                         <div className="space-y-6">
                             <Card className="bg-gray-800 border-gray-700">
-                                <h2 className="text-2xl font-semibold text-white mb-4">Simulation</h2>
+                                <h2 className="text-2xl font-semibold text-white m-4">Simulation</h2>
                                 <Simulation 
                                     controlParameters={state.controller}
                                     systemParameters={state}
@@ -108,8 +146,28 @@ export default function TuningPage() {
                             </Card>
 
                             <Card className="bg-gray-800 border-gray-700 p-6">
-                                <h2 className="text-2xl font-semibold text-white mb-4">Control Parameters</h2>
-                                <div className="grid grid-cols-2 gap-4">
+                                <h2 className="text-2xl font-semibold text-white mb-4">Control Strategy</h2>
+                                <Select
+                                    value={state.controlStrategy}
+                                    onValueChange={handleStrategyChange}
+                                >
+                                    <SelectTrigger className="w-full bg-gray-700 border-gray-600 text-white">
+                                        <SelectValue placeholder="Select control strategy" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-gray-700 border-gray-600">
+                                        {controlStrategies.map((strategy) => (
+                                            <SelectItem 
+                                                key={strategy.value} 
+                                                value={strategy.value}
+                                                className="text-white hover:bg-gray-600"
+                                            >
+                                                {strategy.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                
+                                <div className="grid grid-cols-2 gap-4 mt-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="kp" className="text-gray-300">Proportional Gain (Kp)</Label>
                                         <Input
@@ -132,17 +190,19 @@ export default function TuningPage() {
                                             className="bg-gray-700 border-gray-600 text-white"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="kd" className="text-gray-300">Derivative Gain (Kd)</Label>
-                                        <Input
-                                            id="kd"
-                                            type="number"
-                                            value={kd}
-                                            onChange={(e) => setKd(e.target.value)}
-                                            step="0.1"
-                                            className="bg-gray-700 border-gray-600 text-white"
-                                        />
-                                    </div>
+                                    {state.controlStrategy !== 'PI' && (
+                                        <div className="space-y-2">
+                                            <Label htmlFor="kd" className="text-gray-300">Derivative Gain (Kd)</Label>
+                                            <Input
+                                                id="kd"
+                                                type="number"
+                                                value={kd}
+                                                onChange={(e) => setKd(e.target.value)}
+                                                step="0.1"
+                                                className="bg-gray-700 border-gray-600 text-white"
+                                            />
+                                        </div>
+                                    )}
                                     <div className="space-y-2">
                                         <Label htmlFor="setpoint" className="text-gray-300">Setpoint</Label>
                                         <Input
@@ -162,6 +222,13 @@ export default function TuningPage() {
                                 >
                                     Update Parameters
                                 </Button>
+                            </Card>
+
+                            <Card className="bg-gray-800 border-gray-700 p-6">
+                                <ScenarioSelector 
+                                    onSelect={handleScenarioSelect}
+                                    disabled={isRunning}
+                                />
                             </Card>
                         </div>
 

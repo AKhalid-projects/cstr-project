@@ -1,33 +1,40 @@
 'use client'
 
-import type { ControlSliderProps } from '@/lib/types/simulation'
+import { Label } from '@/components/ui/label'
+import { ControlProps } from '@/lib/types/simulation'
 
-export default function ControlSlider({ 
-  label, 
-  value, 
-  onChange, 
-  min = 0, 
-  max = 100, 
+export default function ControlSlider({
+  label,
+  value,
+  onChange,
+  min = 0,
+  max = 100,
   step = 1,
-  disabled = false 
-}: ControlSliderProps) {
+  disabled = false
+}: ControlProps) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(Number(e.target.value))
+  }
+
+  const displayValue = step >= 1 ? value.toFixed(0) : value.toFixed(3)
+  const unit = label.match(/\((.*?)\)/)?.[1] || ''
+
   return (
     <div className="space-y-2">
-      <div className="flex justify-between">
-        <label className="text-white">{label}</label>
-        <span className="text-gray-400">{value}</span>
-      </div>
+      <Label className="text-gray-300">{label}</Label>
       <input
         type="range"
         min={min}
         max={max}
         step={step}
         value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={handleChange}
         disabled={disabled}
-        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer
-          disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-gray-700"
       />
+      <div className="text-gray-400 text-sm">
+        {displayValue} {unit}
+      </div>
     </div>
   )
 } 

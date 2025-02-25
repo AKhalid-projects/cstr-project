@@ -1,3 +1,5 @@
+import { ControlStrategy } from '@/lib/types/simulation';
+
 // Constants
 const G = 9.81  // Gravity acceleration (m/s²)
 const TIME_STEP = 0.1 // Simulation time step (s)
@@ -24,76 +26,66 @@ export interface SimulationState {
     lastError: number    // For derivative term
   }
   isRunning: boolean
+  controlStrategy: ControlStrategy
 }
 
-export function calculatePIDOutput(state: SimulationState, tank1Level: number): number {
-  const error = state.controller.setpoint - tank1Level
-  const deltaError = error - (state.controller.lastError || 0)
+export function calculateControlOutput(state: SimulationState, tank1Level: number): number {
+  const error = state.controller.setpoint - tank1Level;
+  const deltaError = error - (state.controller.lastError || 0);
+  const integral = (state.controller.errorSum || 0) + error * TIME_STEP;
   
-  // Update integral and derivative terms
-  const integral = (state.controller.errorSum || 0) + error * TIME_STEP
-  const derivative = deltaError / TIME_STEP
+  let output = 0;
+  
+  switch (state.controlStrategy) {
+    case 'PID':
+      output = state.controller.kp * error + 
+               state.controller.ki * integral + 
+               state.controller.kd * (deltaError / TIME_STEP);
+      break;
+      
+    case 'PID_FEEDFORWARD':
+      const feedforward = 0.1 * state.pumpFlow; // Scale pump flow disturbance
+      output = state.controller.kp * error + 
+               state.controller.ki * integral + 
+               state.controller.kd * (deltaError / TIME_STEP) + 
+               feedforward;
+      break;
+      
+    case 'PI':
+      output = state.controller.kp * error + 
+               state.controller.ki * integral;
+      break;
+  }
 
-  // Calculate PID output with proper scaling
-  const output = state.controller.kp * error + 
-                state.controller.ki * integral + 
-                state.controller.kd * derivative
-
-  // Limit output to 0-100%
-  return Math.max(0, Math.min(100, output))
+  return Math.max(0, Math.min(100, output));
 }
 
 export function calculateTankLevels(state: SimulationState): SimulationState {
-  // Convert heights to percentages for PID control
-  const tank1LevelPercent = (state.tank1.height / state.tank1.maxHeight) * 100
-  
-  // Only calculate new controller output if simulation is running
-  const newControllerOutput = state.isRunning 
-    ? calculatePIDOutput(state, tank1LevelPercent)
-    : state.controllerOutput // Keep manual control value when not running
-
   // Convert controller output (%) to inlet flow rate (m³/s)
-  const maxFlow = 10 / (60 * 1000) // 10 L/min to m³/s
-  const qi = (newControllerOutput / 100) * maxFlow
+  const maxInFlow = 10 / (60 * 1000); // Convert 10 L/min to m³/s
+  const inFlow = (state.controllerOutput / 100) * maxInFlow;
+  
+  // Tank dynamics
+  const tank1OutFlow = state.tank1.outletArea * Math.sqrt(2 * G * state.tank1.height);
+  const tank2OutFlow = state.tank2.outletArea * Math.sqrt(2 * G * state.tank2.height);
+  const pumpFlow = state.pumpFlow / (60 * 1000); // L/min to m³/s
 
-  // Tank 1 calculations
-  const h1 = Math.max(0.01, state.tank1.height) // Prevent division by zero
-  const C1 = state.tank1.outletArea * Math.sqrt(2 * G)
-  const q1_out = C1 * Math.sqrt(h1)
-  const dH1 = ((qi - q1_out) / state.tank1.area) * TIME_STEP
-  const newH1 = Math.max(0, Math.min(state.tank1.maxHeight, state.tank1.height + dH1))
+  // Height changes
+  const dH1 = ((inFlow - tank1OutFlow) / state.tank1.area) * TIME_STEP;
+  const dH2 = ((tank1OutFlow - tank2OutFlow - pumpFlow) / state.tank2.area) * TIME_STEP;
 
-  // Tank 2 calculations
-  const h2 = Math.max(0.01, state.tank2.height)
-  const C2 = state.tank2.outletArea * Math.sqrt(2 * G)
-  const q2_out = C2 * Math.sqrt(h2)
-  const qp = state.pumpFlow / (60 * 1000) // L/min to m³/s
-  const dH2 = ((q1_out - q2_out - qp) / state.tank2.area) * TIME_STEP
-  const newH2 = Math.max(0, Math.min(state.tank2.maxHeight, state.tank2.height + dH2))
-
-  // Only update heights if simulation is running
+  // Update heights
   return {
     ...state,
     tank1: { 
-      ...state.tank1, 
-      height: state.isRunning ? newH1 : state.tank1.height 
+      ...state.tank1,
+      height: Math.max(0, Math.min(state.tank1.maxHeight, state.tank1.height + dH1))
     },
     tank2: { 
-      ...state.tank2, 
-      height: state.isRunning ? newH2 : state.tank2.height 
-    },
-    controllerOutput: newControllerOutput,
-    time: state.isRunning ? state.time + TIME_STEP : state.time,
-    controller: {
-      ...state.controller,
-      errorSum: state.isRunning 
-        ? state.controller.errorSum + (state.controller.setpoint - tank1LevelPercent) * TIME_STEP 
-        : state.controller.errorSum,
-      lastError: state.isRunning 
-        ? state.controller.setpoint - tank1LevelPercent 
-        : state.controller.lastError
+      ...state.tank2,
+      height: Math.max(0, Math.min(state.tank2.maxHeight, state.tank2.height + dH2))
     }
-  }
+  };
 }
 
 // Initial state setup
@@ -102,26 +94,27 @@ export const initialState: SimulationState = {
     area: 0.01,        // 100 cm²
     height: 0,         // Empty initially
     maxHeight: 0.5,    // 50 cm max height
-    outletArea: 0.0001 // 1 cm² outlet
+    outletArea: 0.0002 // Larger outlet (2 cm²) - causes faster dynamics
   },
   tank2: {
-    area: 0.01,        // 100 cm²
-    height: 0,         // Empty initially
-    maxHeight: 0.5,    // 50 cm max height
-    outletArea: 0.0001 // 1 cm² outlet
+    area: 0.01,
+    height: 0,
+    maxHeight: 0.5,
+    outletArea: 0.0002
   },
-  controllerOutput: 50, // Start at 50% flow
-  pumpFlow: 0,         // No initial pump disturbance
-  time: 0,             // Start time at 0
+  controllerOutput: 50,
+  pumpFlow: 5,         // Add disturbance pump flow
+  time: 0,
   controller: {
-    kp: 1,
-    ki: 0,
-    kd: 0,
-    setpoint: 50,
+    kp: 2.5,           // Aggressive proportional gain
+    ki: 0.05,          // Small integral gain
+    kd: 0.1,           // Small derivative gain
+    setpoint: 50,      // Target level 50%
     errorSum: 0,
     lastError: 0
   },
-  isRunning: false
+  isRunning: false,
+  controlStrategy: 'PID'
 }
 
 export function calculateFlowRate(level: number, outletDiameter: number): number {

@@ -5,34 +5,27 @@ import { OrbitControls } from '@react-three/drei'
 
 interface SceneProps {
   children: React.ReactNode
+  className?: string
 }
 
-export default function Scene({ children }: SceneProps) {
+export default function Scene({ children, className = '' }: SceneProps) {
   return (
-    <Canvas
-      camera={{ position: [10, 5, 10], fov: 45 }}
-      style={{ background: '#1f2937' }}
-    >
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[10, 10, 5]} intensity={1} />
-      <group position={[0, 0, 0]}>
-        {/* Tank container (static) */}
-        <mesh>
-          <cylinderGeometry args={[2.2, 2.2, 5.2, 32]} />
-          <meshPhongMaterial 
-            color="#4b5563" 
-            transparent={true} 
-            opacity={0.3} 
-          />
-        </mesh>
+    <div className={`w-full h-full min-h-[400px] bg-gray-900 rounded-lg ${className}`}>
+      <Canvas
+        camera={{ position: [4, 0, 4], fov: 45 }}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[5, 5, 5]} intensity={0.5} />
         {children}
-      </group>
-      <OrbitControls 
-        enableZoom={false}
-        enablePan={false}
-        minPolarAngle={Math.PI / 4}
-        maxPolarAngle={Math.PI / 2}
-      />
-    </Canvas>
+        <OrbitControls 
+          enableZoom={false}
+          enablePan={false}
+          minPolarAngle={Math.PI / 4}
+          maxPolarAngle={Math.PI * 0.65}
+          target={[0, 0, 0]}
+        />
+      </Canvas>
+    </div>
   )
 } 

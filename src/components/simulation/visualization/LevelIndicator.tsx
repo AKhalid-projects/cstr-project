@@ -1,25 +1,14 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { VisualizationProps } from '@/lib/types/simulation'
 
-interface LevelIndicatorProps {
-  level: number
-}
-
-export default function LevelIndicator({ level }: LevelIndicatorProps) {
+export default function LevelIndicator({ level }: Pick<VisualizationProps, 'level'>) {
   return (
-    <div className="absolute right-4 top-4 bottom-4 w-12 bg-gray-700/50 rounded-full">
-      <motion.div
-        className="absolute bottom-0 w-full bg-blue-500 rounded-full"
-        initial={{ height: '0%' }}
-        animate={{ height: `${level}%` }}
-        transition={{ type: "spring", stiffness: 100 }}
+    <div className="absolute left-0 bottom-0 w-2 h-full bg-gray-700">
+      <div 
+        className="absolute bottom-0 w-full bg-blue-500 transition-all duration-200"
+        style={{ height: `${level}%` }}
       />
-      <div className="absolute inset-0 flex flex-col justify-between p-2 text-white text-sm">
-        <span>100%</span>
-        <span>50%</span>
-        <span>0%</span>
-      </div>
     </div>
   )
 } 
