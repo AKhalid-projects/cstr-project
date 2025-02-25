@@ -2,8 +2,14 @@
 
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { scenarios } from '@/lib/utils/simulation-scenarios'
+import { scenarioCategories } from '@/lib/utils/simulation-scenarios'
 import { SimulationState } from '@/lib/types/simulation'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 
 interface ScenarioSelectorProps {
   onSelect: (scenario: Partial<SimulationState>) => void
@@ -12,25 +18,39 @@ interface ScenarioSelectorProps {
 
 export default function ScenarioSelector({ onSelect, disabled }: ScenarioSelectorProps) {
   return (
-    <Card className="bg-gray-800 border-gray-700 p-6">
-      <h3 className="text-xl font-semibold text-white mb-6">Predefined Scenarios</h3>
-      <div className="grid grid-cols-1 gap-4">
-        {scenarios.map((scenario) => (
-          <div key={scenario.name} className="space-y-2">
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              onClick={() => onSelect(scenario.state)}
-              disabled={disabled}
-            >
-              {scenario.name}
-            </Button>
-            <p className="text-sm text-gray-400 px-2">
-              {scenario.description}
-            </p>
-          </div>
+    <>
+      <h3 className="text-xl font-semibold text-white mb-4">Predefined Scenarios</h3>
+      <Accordion type="single" collapsible className="w-full">
+        {scenarioCategories.map((category, index) => (
+          <AccordionItem key={category.name} value={`item-${index}`}>
+            <AccordionTrigger className="text-white hover:text-white">
+              {category.name}
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-sm text-gray-400 mb-4">
+                {category.description}
+              </p>
+              <div className="space-y-4">
+                {category.scenarios.map((scenario) => (
+                  <div key={scenario.name} className="space-y-2">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={() => onSelect(scenario.state)}
+                      disabled={disabled}
+                    >
+                      {scenario.name}
+                    </Button>
+                    <p className="text-sm text-gray-400 px-2">
+                      {scenario.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
         ))}
-      </div>
-    </Card>
+      </Accordion>
+    </>
   )
 } 

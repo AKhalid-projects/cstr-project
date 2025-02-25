@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Navbar from "@/components/layout/Navbar";
 import "./globals.css";
+import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CSTR System Simulation",
-  description: "Advanced CSTR system simulation for industrial processes",
+  title: "CSTR Simulator",
+  description: "Interactive PID Control System Simulator",
 };
 
 export default function RootLayout({
@@ -17,9 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gradient-to-b from-gray-900 to-gray-800 min-h-screen`}>
+      <body className={inter.className}>
         <Navbar />
-        {children}
+        <main className="min-h-screen pt-16 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );
