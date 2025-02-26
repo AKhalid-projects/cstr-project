@@ -262,16 +262,6 @@ export default function TuningPage() {
                                     </Button>
                                 </div>
                             </Card>
-
-                            {/* Scenario Selector Card */}
-                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
-                                <div className="p-6">
-                                    <ScenarioSelector 
-                                        onSelect={handleScenarioSelect}
-                                        disabled={isRunning}
-                                    />
-                                </div>
-                            </Card>
                         </div>
 
                         {/* Right Column - Graphs and Parameters */}
@@ -324,7 +314,7 @@ export default function TuningPage() {
                                                     controllerOutput={state.controllerOutput}
                                                     onControllerOutputChange={(value) => updateState({ 
                                                         controllerOutput: value 
-                                                    })}
+                                                      })}
                                                     pumpFlow={state.pumpFlow}
                                                     onPumpFlowChange={(value) => updateState({ 
                                                         pumpFlow: value 
@@ -334,6 +324,16 @@ export default function TuningPage() {
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </Card>
+
+                            {/* Scenario Selector Card */}
+                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
+                                <div className="p-6">
+                                    <ScenarioSelector 
+                                        onSelect={handleScenarioSelect}
+                                        disabled={isRunning}
+                                    />
                                 </div>
                             </Card>
                         </div>

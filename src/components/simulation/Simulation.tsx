@@ -6,6 +6,10 @@ import LevelIndicator from './visualization/LevelIndicator'
 import { motion } from 'framer-motion'
 import { Card } from '@/components/ui/Card'
 import { Target } from 'lucide-react'
+import WaterFlow from './visualization/WaterFlow'
+import OutletFlow from './visualization/OutletFlow'
+import SchematicTank from './visualization/SchematicTank'
+import ValveSymbol from './visualization/ValveSymbol'
 
 interface SimulationProps {
   controlParameters: {
@@ -36,21 +40,24 @@ export default function Simulation({ controlParameters, systemParameters }: Simu
     <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur-sm overflow-hidden">
       <div className="space-y-8 p-6">
         {/* 3D Visualization */}
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-1">
           {/* Upper Tank */}
-          <div className="aspect-[16/9] relative bg-gray-900/50 rounded-lg backdrop-blur-sm border border-gray-700/50">
-            <Scene>
-              <Tank3D level={tank1LevelPercent} />
-            </Scene>
-            <LevelIndicator level={tank1LevelPercent} />
+          <div className="relative bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6 w-[300px] mx-auto">
+            <SchematicTank level={tank1LevelPercent} />
+          </div>
+
+          {/* Water Flow with Valve */}
+          <div className="h-16 w-[300px] mx-auto">
+            <WaterFlow 
+              isFlowing={tank1LevelPercent > 0}
+              flowRate={systemParameters.controllerOutput}
+              height="h-16"
+            />
           </div>
 
           {/* Lower Tank */}
-          <div className="aspect-[16/9] relative bg-gray-900/50 rounded-lg backdrop-blur-sm border border-gray-700/50">
-            <Scene>
-              <Tank3D level={tank2LevelPercent} />
-            </Scene>
-            <LevelIndicator level={tank2LevelPercent} />
+          <div className="relative bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6 w-[300px] mx-auto">
+            <SchematicTank level={tank2LevelPercent} />
           </div>
         </div>
 
