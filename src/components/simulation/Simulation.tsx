@@ -36,9 +36,9 @@ export default function Simulation({ controlParameters, systemParameters }: Simu
     <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur-sm overflow-hidden">
       <div className="space-y-8 p-6">
         {/* 3D Visualization */}
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-4">
           {/* Upper Tank */}
-          <div className="aspect-square relative bg-gray-900/50 rounded-lg backdrop-blur-sm border border-gray-700/50">
+          <div className="aspect-[16/9] relative bg-gray-900/50 rounded-lg backdrop-blur-sm border border-gray-700/50">
             <Scene>
               <Tank3D level={tank1LevelPercent} />
             </Scene>
@@ -46,7 +46,7 @@ export default function Simulation({ controlParameters, systemParameters }: Simu
           </div>
 
           {/* Lower Tank */}
-          <div className="aspect-square relative bg-gray-900/50 rounded-lg backdrop-blur-sm border border-gray-700/50">
+          <div className="aspect-[16/9] relative bg-gray-900/50 rounded-lg backdrop-blur-sm border border-gray-700/50">
             <Scene>
               <Tank3D level={tank2LevelPercent} />
             </Scene>
