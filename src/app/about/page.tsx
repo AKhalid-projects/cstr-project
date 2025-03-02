@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { GradientBackground } from '@/components/ui/gradient-background'
-import { ArrowRight, Code2, Beaker, Cpu, BookOpen, Check, Activity, Award, Factory, LineChart, Play } from 'lucide-react'
+import { ArrowRight, Code2, Beaker, Cpu, BookOpen, Check, Activity, Award,} from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 
@@ -10,7 +10,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
       <GradientBackground />
-      
+
       {/* Hero Section */}
       <section className="relative pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,7 +24,7 @@ export default function AboutPage() {
               About the Project
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              An advanced simulation platform for understanding and experimenting with 
+              An advanced simulation platform for understanding and experimenting with
               PID control systems in real-world applications.
             </p>
           </motion.div>
@@ -36,7 +36,7 @@ export default function AboutPage() {
         {/* Move background elements below content with negative z-index */}
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px] -z-10" />
         <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-blue-500/5 -z-20" />
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Content */}
@@ -56,69 +56,23 @@ export default function AboutPage() {
                   ?
                 </h2>
                 <p className="text-xl text-gray-300">
-                  An advanced simulation platform designed for learning and mastering process control dynamics
+                  A web-based simulation platform designed for visualizing and controlling a gravity-
+                  drained tank system. This interactive tool enables users to explore fluid dynamics,
+                  control conversion, and process automation in real-time, providing a hands-on
+                  learning experience in system behavior and control strategies.
                 </p>
               </div>
 
-              <div className="space-y-6">
-                {[
-                  {
-                    title: "Interactive Learning",
-                    description: "Experience real-time process control through hands-on simulation and experimentation.",
-                    icon: <BookOpen className="w-6 h-6 text-purple-400" />
-                  },
-                  {
-                    title: "Industry-Standard Models",
-                    description: "Built on proven mathematical models used in real industrial processes.",
-                    icon: <Factory className="w-6 h-6 text-blue-400" />
-                  },
-                  {
-                    title: "Real-time Visualization",
-                    description: "Watch your control strategies come to life with dynamic 3D visualization.",
-                    icon: <LineChart className="w-6 h-6 text-purple-400" />
-                  }
-                ].map((feature, index) => (
-                  <motion.div
-                    key={feature.title}
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="flex gap-4 p-4 rounded-lg bg-gray-800/50 border border-gray-700/50 backdrop-blur-sm relative"
-                  >
-                    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 flex items-center justify-center">
-                      {feature.icon}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-1">
-                        {feature.title}
-                      </h3>
-                      <p className="text-gray-400">
-                        {feature.description}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
+
 
               <div className="flex gap-4">
                 <Link href="/tuning">
-                  <Button 
+                  <Button
                     size="lg"
                     className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 relative"
                   >
                     Get Started
                     <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </Link>
-                <Link href="/tuning">
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    className="relative"
-                  >
-                    View Demo
-                    <Play className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
               </div>
@@ -148,7 +102,7 @@ export default function AboutPage() {
       <section className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
         <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-purple-500/5 -z-10" />
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -212,7 +166,7 @@ export default function AboutPage() {
       <section className="py-24 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
         <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-purple-500/5" />
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-6">
@@ -222,7 +176,7 @@ export default function AboutPage() {
               </span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Our platform combines advanced simulation technology with intuitive learning paths 
+              Our platform combines advanced simulation technology with intuitive learning paths
               to create an unparalleled educational experience.
             </p>
           </div>
@@ -234,15 +188,30 @@ export default function AboutPage() {
                 <div className="p-3 rounded-lg bg-blue-500/10 text-blue-400">
                   <BookOpen className="w-6 h-6" />
                 </div>
-                <h3 className="text-2xl font-semibold text-white">Structured Learning</h3>
+                <h3 className="text-2xl font-semibold text-white">Educational Resource</h3>
               </div>
               <p className="text-gray-300 mb-6">
-                Follow our carefully crafted learning paths from basic concepts to advanced control strategies.
+                Enhances learning by providing a visual and interactive
+                platform for students to understand and apply control strategies.
+              </p>
+            </div>
+
+            {/* Simulation Environment Card */}
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-8 hover:border-purple-500/50 transition-colors duration-300">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 rounded-lg bg-purple-500/10 text-purple-400">
+                  <Activity className="w-6 h-6" />
+                </div>
+                <h3 className="text-2xl font-semibold text-white">Real-Time Feedback</h3>
+              </div>
+              <p className="text-gray-300 mb-6">
+                Users can adjust control parameters and immediately see
+                the effects on the system, facilitating a deeper understanding of process control.
               </p>
               <ul className="space-y-3">
-                {['Interactive Tutorials', 'Hands-on Exercises', 'Real-world Case Studies'].map((item) => (
+                {['Dynamic Process Models', 'Real-time Visualization', 'Parameter Tuning'].map((item) => (
                   <li key={item} className="flex items-center gap-2 text-gray-400">
-                    <Check className="w-5 h-5 text-blue-400" />
+                    <Check className="w-5 h-5 text-purple-400" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -255,10 +224,11 @@ export default function AboutPage() {
                 <div className="p-3 rounded-lg bg-purple-500/10 text-purple-400">
                   <Activity className="w-6 h-6" />
                 </div>
-                <h3 className="text-2xl font-semibold text-white">Live Simulation</h3>
+                <h3 className="text-2xl font-semibold text-white">Flexibility</h3>
               </div>
               <p className="text-gray-300 mb-6">
-                Experience real-time process control simulation with our advanced modeling engine.
+                Allows for the implementation of various control strategies such as PID,
+                feedforward, and system identification.
               </p>
               <ul className="space-y-3">
                 {['Dynamic Process Models', 'Real-time Visualization', 'Parameter Tuning'].map((item) => (
@@ -276,10 +246,11 @@ export default function AboutPage() {
                 <div className="p-3 rounded-lg bg-green-500/10 text-green-400">
                   <Award className="w-6 h-6" />
                 </div>
-                <h3 className="text-2xl font-semibold text-white">Progress Tracking</h3>
+                <h3 className="text-2xl font-semibold text-white">Practical Application</h3>
               </div>
               <p className="text-gray-300 mb-6">
-                Monitor your learning progress with comprehensive assessments and analytics.
+                Offers industry operators a user-friendly tool for simulating
+                and optimizing process control.
               </p>
               <ul className="space-y-3">
                 {['Skill Assessment', 'Performance Analytics', 'Certification Path'].map((item) => (
@@ -293,8 +264,8 @@ export default function AboutPage() {
           </div>
 
           <div className="text-center">
-            <Link 
-              href="/signup" 
+            <Link
+              href="/signup"
               className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-500 transition-colors duration-300"
             >
               Start Learning Now

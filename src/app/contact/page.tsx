@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { GradientBackground } from '@/components/ui/gradient-background'
-import { Mail, MessageSquare, Phone, MapPin, Plus, Minus, Linkedin } from 'lucide-react'
+import { Plus, Minus, Linkedin } from 'lucide-react'
 import { useState } from 'react'
 
 export default function ContactPage() {
@@ -33,14 +33,14 @@ export default function ContactPage() {
               Get in Touch
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Have questions about the CSTR Simulator? We&apos;re here to help.
+              Have questions about our simulation? We&apos;re here to help.
             </p>
           </motion.div>
         </div>
       </section>
 
-            {/* Team Section */}
-            <section className="py-16 bg-gray-800/30">
+      {/* Team Section */}
+      <section className="py-16 bg-gray-800/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -53,7 +53,7 @@ export default function ContactPage() {
               Meet Our Team
             </h2>
             <p className="text-xl text-gray-300">
-              The minds behind the CSTR Simulator
+              The team behind the development of our simulator.
             </p>
           </motion.div>
 
@@ -69,22 +69,18 @@ export default function ContactPage() {
               >
                 <Card className="bg-gray-800/50 border-gray-700 p-6 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
+
                   <div className="relative z-10">
                     <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-gradient-to-r from-blue-500 to-purple-500 p-1">
                       <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center">
                         <span className="text-3xl">{member.emoji}</span>
                       </div>
                     </div>
-                    
+
                     <h3 className="text-xl font-semibold text-white text-center mb-2">
                       {member.name}
                     </h3>
-                    
-                    <p className="text-gray-400 text-center mb-4">
-                      {member.role}
-                    </p>
-                    
+
                     <div className="flex justify-center">
                       <a
                         href={member.linkedin}
@@ -125,7 +121,7 @@ export default function ContactPage() {
                       <label className="text-sm text-gray-300 mb-2 block">
                         First Name
                       </label>
-                      <Input 
+                      <Input
                         className="bg-gray-700 border-gray-600 text-white"
                         placeholder="John"
                       />
@@ -134,7 +130,7 @@ export default function ContactPage() {
                       <label className="text-sm text-gray-300 mb-2 block">
                         Last Name
                       </label>
-                      <Input 
+                      <Input
                         className="bg-gray-700 border-gray-600 text-white"
                         placeholder="Doe"
                       />
@@ -144,7 +140,7 @@ export default function ContactPage() {
                     <label className="text-sm text-gray-300 mb-2 block">
                       Email
                     </label>
-                    <Input 
+                    <Input
                       type="email"
                       className="bg-gray-700 border-gray-600 text-white"
                       placeholder="john@example.com"
@@ -154,7 +150,7 @@ export default function ContactPage() {
                     <label className="text-sm text-gray-300 mb-2 block">
                       Message
                     </label>
-                    <Textarea 
+                    <Textarea
                       className="bg-gray-700 border-gray-600 text-white h-32"
                       placeholder="Your message..."
                     />
@@ -168,31 +164,7 @@ export default function ContactPage() {
 
             {/* Contact Info & FAQ */}
             <div className="space-y-8">
-              {/* Contact Methods */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true }}
-                className="grid sm:grid-cols-2 gap-4"
-              >
-                {contactMethods.map((method) => (
-                  <Card 
-                    key={method.title}
-                    className="bg-gray-800/50 border-gray-700 p-6"
-                  >
-                    <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-4">
-                      {method.icon}
-                    </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
-                      {method.title}
-                    </h3>
-                    <p className="text-gray-400">
-                      {method.details}
-                    </p>
-                  </Card>
-                ))}
-              </motion.div>
+            
 
               {/* FAQ Section */}
               <motion.div
@@ -207,7 +179,7 @@ export default function ContactPage() {
                   </h2>
                   <div className="space-y-4">
                     {faqs.map((faq, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="border-b border-gray-700 last:border-0 pb-4 last:pb-0"
                       >
@@ -242,33 +214,12 @@ export default function ContactPage() {
   )
 }
 
-const contactMethods = [
-  {
-    title: 'Email',
-    details: 'support@cstr-simulator.com',
-    icon: <Mail className="w-6 h-6 text-blue-500" />
-  },
-  {
-    title: 'Live Chat',
-    details: 'Available 9 AM - 5 PM EST',
-    icon: <MessageSquare className="w-6 h-6 text-blue-500" />
-  },
-  {
-    title: 'Phone',
-    details: '+1 (555) 123-4567',
-    icon: <Phone className="w-6 h-6 text-blue-500" />
-  },
-  {
-    title: 'Location',
-    details: 'New York, NY 10001',
-    icon: <MapPin className="w-6 h-6 text-blue-500" />
-  }
-]
+
 
 const faqs = [
   {
     question: 'What is the CSTR Simulator?',
-    answer: 'The CSTR Simulator is an educational tool designed to help users understand and experiment with PID control systems in a virtual environment.'
+    answer: 'The CSTR Simulator is an interactive platform that bridges theory and practice in process control, helping students, engineers, and researchers deepen their understanding through real-world simulations.'
   },
   {
     question: 'Is the simulator free to use?',
@@ -280,26 +231,26 @@ const faqs = [
   },
   {
     question: 'Do you offer technical support?',
-    answer: 'Yes, we provide technical support through email and live chat during business hours.'
+    answer: 'Yes, we provide technical support through email.'
   }
 ]
 
 const teamMembers = [
   {
     name: 'Shahd Mohamed Alnajdi',
-    role: 'Project Lead',
+
     emoji: '👩‍💻',
     linkedin: 'http://linkedin.com/in/shahd-alnajdi-287b4132a'
   },
   {
     name: 'Khlod Abd Allatif Matar',
-    role: 'Development Lead',
+
     emoji: '👩‍🔬',
     linkedin: 'http://linkedin.com/in/khulood-hilal-32a5a8242'
   },
   {
     name: 'Jumana Mohamed Rashdan',
-    role: 'Technical Lead',
+
     emoji: '👩‍🎨',
     linkedin: 'http://linkedin.com/in/jumana-rashdan-bb63b824a'
   }

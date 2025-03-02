@@ -1,15 +1,9 @@
 'use client'
-
-import Scene from './3d/Scene'
-import Tank3D from './3d/Tank3D'
-import LevelIndicator from './visualization/LevelIndicator'
 import { motion } from 'framer-motion'
 import { Card } from '@/components/ui/Card'
 import { Target } from 'lucide-react'
 import WaterFlow from './visualization/WaterFlow'
-import OutletFlow from './visualization/OutletFlow'
 import SchematicTank from './visualization/SchematicTank'
-import ValveSymbol from './visualization/ValveSymbol'
 
 interface SimulationProps {
   controlParameters: {

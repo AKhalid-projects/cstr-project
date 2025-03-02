@@ -19,12 +19,13 @@ export default function HomePage() {
           >
             <h2 className="text-5xl font-bold text-white mb-6">
               <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 bg-clip-text text-transparent animate-gradient bg-300%">
-                Meet Process Dynx, The PID Control System Simulator
+                Welcome to ProcessDynx
               </span>
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Experience real-time control system behavior with our interactive simulator.
-              Perfect for learning and experimenting with PID control strategies.
+              An in-depth, practical, and engaging platform for teaching process control,
+              empowering engineers with the knowledge and skills necessary for industry
+              success.
             </p>
             <Link href="/tuning">
               <Button size="lg" className="group">
@@ -64,7 +65,8 @@ export default function HomePage() {
               Powerful Features
             </h2>
             <p className="text-gray-400">
-              Everything you need to understand and master PID control systems
+              Everything you need to comprehensively learn, apply, and advance in process
+              control.
             </p>
           </motion.div>
 
@@ -108,7 +110,7 @@ export default function HomePage() {
                 Interactive Learning Experience
               </h2>
               <p className="text-gray-300 mb-8">
-                Our simulator provides a hands-on approach to understanding PID control systems.
+                Our simulator provides a hands-on approach to understanding process control systems.
                 Experiment with different parameters and see the results in real-time.
               </p>
               <Link href="/tuning">
@@ -143,7 +145,7 @@ export default function HomePage() {
               </span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              ProcessDynX provides a comprehensive learning experience for students, 
+              ProcessDynX provides a comprehensive learning experience for students,
               professionals, and researchers in process control engineering.
             </p>
           </motion.div>
@@ -204,7 +206,7 @@ export default function HomePage() {
             Ready to Get Started?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
-            Jump into our simulator and start exploring PID control systems today.
+            Dive into our simulator and begin exploring process control systems today.
           </p>
           <Link href="/tuning">
             <Button size="lg" className="group">

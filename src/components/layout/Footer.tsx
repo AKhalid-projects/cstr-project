@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Github, Linkedin, Mail } from 'lucide-react'
+import { Linkedin, Mail } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -20,19 +20,12 @@ export function Footer() {
               </span>
             </h3>
             <p className="text-gray-400 text-sm">
-              An educational platform for understanding and experimenting with PID control systems.
+            An educational platform for understanding and experimenting with process control
+            systems.
             </p>
             <div className="flex space-x-4">
               <a
-                href="https://github.com/your-repo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <Github className="w-5 h-5" />
-              </a>
-              <a
-                href="mailto:contact@cstr-simulator.com"
+                href="mailto:processdynx@gmail.com"
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <Mail className="w-5 h-5" />
@@ -48,7 +41,7 @@ export function Footer() {
             <ul className="space-y-3">
               {quickLinks.map(link => (
                 <li key={link.name}>
-                  <Link 
+                  <Link
                     href={link.href}
                     className="text-gray-400 hover:text-white transition-colors"
                   >
@@ -62,7 +55,7 @@ export function Footer() {
           {/* Team */}
           <div>
             <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
-              Team
+              Managed by
             </h3>
             <ul className="space-y-3">
               {teamLinks.map(member => (
@@ -87,16 +80,17 @@ export function Footer() {
               Contact
             </h3>
             <ul className="space-y-3 text-gray-400">
-              <li>University of Bahrain,</li>
-              <li>Faculty of Science,</li>
               <li>Kingdom of Bahrain</li>
+              <li>University of Bahrain</li>
+              <li>College of Engineering</li>
+
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-gray-800">
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -119,15 +113,11 @@ const quickLinks = [
 
 const teamLinks = [
   {
-    name: 'Shahd Alnajdi',
-    linkedin: 'http://linkedin.com/in/shahd-alnajdi-287b4132a'
+    name: 'Dr. Bassam Alhamad',
+    linkedin: 'https://www.linkedin.com/in/bassam-alhamad-25429b20'
   },
   {
-    name: 'Khlod Matar',
-    linkedin: 'http://linkedin.com/in/khulood-hilal-32a5a8242'
+    name: 'Mrs. Bintu Jasson',
+    linkedin: 'https://www.linkedin.com/in/bintu-jasson-4a372b243'
   },
-  {
-    name: 'Jumana Rashdan',
-    linkedin: 'http://linkedin.com/in/jumana-rashdan-bb63b824a'
-  }
 ] 
