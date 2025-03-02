@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { GradientBackground } from '@/components/ui/gradient-background'
-import { ArrowRight, Code2, Beaker, Cpu, BookOpen, Check, Activity, Award, Star } from 'lucide-react'
+import { ArrowRight, Code2, Beaker, Cpu, BookOpen, Activity, Award, Star } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -411,7 +411,7 @@ export default function AboutPage() {
 
                     {/* Message */}
                     <p className="text-gray-300 mb-6 flex-grow">
-                      "{testimonial.message}"
+                    &quot;{testimonial.message}&quot;
                     </p>
 
                     {/* User Info */}
