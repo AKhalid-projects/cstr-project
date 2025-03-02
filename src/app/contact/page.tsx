@@ -8,12 +8,73 @@ import { Textarea } from '@/components/ui/textarea'
 import { GradientBackground } from '@/components/ui/gradient-background'
 import { Plus, Minus, Linkedin } from 'lucide-react'
 import { useState } from 'react'
+import emailjs from '@emailjs/browser'
+
+interface FormData {
+  firstName: string
+  lastName: string
+  email: string
+  message: string
+}
+
+interface FormStatus {
+  loading: boolean
+  error: string | null
+  success: boolean
+}
 
 export default function ContactPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [formData, setFormData] = useState<FormData>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    message: ''
+  })
+
+  const [status, setStatus] = useState<FormStatus>({
+    loading: false,
+    error: null,
+    success: false
+  })
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus({ loading: true, error: null, success: false })
+
+    try {
+      await emailjs.send(
+        'service_uaqzl1i',
+        'template_917gcqg',
+        {
+          from_name: `${formData.firstName} ${formData.lastName}`,
+          from_email: formData.email,
+          message: formData.message,
+          to_email: 'processdynx@gmail.com',
+        },
+        '7j4SiPbYsZtLLdIzP'
+      )
+
+      setStatus({ loading: false, error: null, success: true })
+      setFormData({ firstName: '', lastName: '', email: '', message: '' })
+    } catch (error) {
+      setStatus({ 
+        loading: false, 
+        error: 'Failed to send message. Please try again.', 
+        success: false 
+      })
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
   }
 
   return (
@@ -115,15 +176,19 @@ export default function ContactPage() {
                 <h2 className="text-2xl font-bold text-white mb-6">
                   Send us a Message
                 </h2>
-                <form className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm text-gray-300 mb-2 block">
                         First Name
                       </label>
                       <Input
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
                         className="bg-gray-700 border-gray-600 text-white"
                         placeholder="John"
+                        required
                       />
                     </div>
                     <div>
@@ -131,8 +196,12 @@ export default function ContactPage() {
                         Last Name
                       </label>
                       <Input
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
                         className="bg-gray-700 border-gray-600 text-white"
                         placeholder="Doe"
+                        required
                       />
                     </div>
                   </div>
@@ -141,9 +210,13 @@ export default function ContactPage() {
                       Email
                     </label>
                     <Input
+                      name="email"
                       type="email"
+                      value={formData.email}
+                      onChange={handleChange}
                       className="bg-gray-700 border-gray-600 text-white"
                       placeholder="john@example.com"
+                      required
                     />
                   </div>
                   <div>
@@ -151,13 +224,29 @@ export default function ContactPage() {
                       Message
                     </label>
                     <Textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
                       className="bg-gray-700 border-gray-600 text-white h-32"
                       placeholder="Your message..."
+                      required
                     />
                   </div>
-                  <Button className="w-full">
-                    Send Message
+                  <Button 
+                    type="submit" 
+                    className="w-full"
+                    disabled={status.loading}
+                  >
+                    {status.loading ? 'Sending...' : 'Send Message'}
                   </Button>
+
+                  {/* Status Messages */}
+                  {status.error && (
+                    <p className="text-red-500 text-sm">{status.error}</p>
+                  )}
+                  {status.success && (
+                    <p className="text-green-500 text-sm">Message sent successfully!</p>
+                  )}
                 </form>
               </Card>
             </motion.div>

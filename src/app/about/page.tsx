@@ -411,7 +411,7 @@ export default function AboutPage() {
 
                     {/* Message */}
                     <p className="text-gray-300 mb-6 flex-grow">
-                    &quot;{testimonial.message}&quot;
+                    &quot;@{testimonial.message}&quot;
                     </p>
 
                     {/* User Info */}
