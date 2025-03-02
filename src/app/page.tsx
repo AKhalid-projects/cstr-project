@@ -206,7 +206,7 @@ export default function HomePage() {
             Ready to Get Started?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
-            Dive into our simulator and begin exploring process control systems today.
+            Dive into our simulator and begin exploring process control systems today.  
           </p>
           <Link href="/tuning">
             <Button size="lg" className="group">

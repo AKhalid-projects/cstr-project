@@ -2,9 +2,72 @@
 
 import { motion } from 'framer-motion'
 import { GradientBackground } from '@/components/ui/gradient-background'
-import { ArrowRight, Code2, Beaker, Cpu, BookOpen, Check, Activity, Award,} from 'lucide-react'
+import { ArrowRight, Code2, Beaker, Cpu, BookOpen, Check, Activity, Award, Star } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
+
+interface Testimonial {
+  name: string
+  message: string
+  rating: number
+  userType: string
+  university: string
+}
+
+const testimonials: Testimonial[] = [
+  {
+    name: "Ahmed Al-Sayed",
+    message: "ProcessDynX has transformed how I understand control systems. The interactive simulations make complex concepts tangible and easier to grasp.",
+    rating: 5,
+    userType: "Student",
+    university: "University of Bahrain"
+  },
+  {
+    name: "Dr. Sarah Johnson",
+    message: "An excellent teaching tool that bridges the gap between theory and practice. My students have shown remarkable improvement in understanding PID control concepts.",
+    rating: 5,
+    userType: "Professor",
+    university: "Polytechnic Bahrain"
+  },
+  {
+    name: "Mohammed Hassan",
+    message: "The real-time visualization helps me understand the impact of different control parameters. It's an invaluable tool for learning process control.",
+    rating: 4.4,
+    userType: "Graduate Student",
+    university: "Arabian Gulf University"
+  }
+]
+
+const RatingStars = ({ rating }: { rating: number }) => {
+  const fullStars = Math.floor(rating)
+  const hasHalfStar = rating % 1 !== 0
+
+  return (
+    <div className="flex gap-1">
+      {/* Full stars */}
+      {[...Array(fullStars)].map((_, i) => (
+        <Star key={`full-${i}`} className="w-5 h-5 fill-yellow-500 text-yellow-500" />
+      ))}
+      
+      {/* Half star */}
+      {hasHalfStar && (
+        <div className="relative w-5 h-5">
+          {/* Empty star background */}
+          <Star className="w-5 h-5 text-yellow-500 absolute" />
+          {/* Half-filled star */}
+          <div className="overflow-hidden w-[50%] absolute">
+            <Star className="w-5 h-5 fill-yellow-500 text-yellow-500" />
+          </div>
+        </div>
+      )}
+      
+      {/* Empty stars */}
+      {[...Array(5 - Math.ceil(rating))].map((_, i) => (
+        <Star key={`empty-${i}`} className="w-5 h-5 text-yellow-500" />
+      ))}
+    </div>
+  )
+}
 
 export default function AboutPage() {
   return (
@@ -247,6 +310,65 @@ export default function AboutPage() {
               Start Learning Now
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-blue-500/5" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl font-bold text-white mb-6">
+              What Our Users Say About
+              <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+                {" "}ProcessDynX
+              </span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Hear from students and educators who have experienced the power of interactive learning
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={testimonial.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.2 }}
+                viewport={{ once: true }}
+                className="relative group h-full"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl transform group-hover:scale-105 transition-transform duration-300" />
+                <div className="relative bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 hover:border-blue-500/50 transition-colors duration-300 h-full flex flex-col">
+                  {/* Rating */}
+                  <div className="mb-4">
+                    <RatingStars rating={testimonial.rating} />
+                  </div>
+
+                  {/* Message */}
+                  <p className="text-gray-300 mb-6 flex-grow">
+                    "{testimonial.message}"
+                  </p>
+
+                  {/* User Info */}
+                  <div className="pt-4 border-t border-gray-700/50">
+                    <p className="text-white font-semibold">{testimonial.name}</p>
+                    <p className="text-sm text-gray-400">{testimonial.userType}</p>
+                    <p className="text-sm text-gray-400">{testimonial.university}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
