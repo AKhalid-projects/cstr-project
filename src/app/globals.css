@@ -80,3 +80,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Add these styles to your globals.css */
+.testimonials-swiper .swiper-pagination-bullet {
+  @apply bg-gray-500 opacity-50;
+}
+
+.testimonials-swiper .swiper-pagination-bullet-active {
+  @apply bg-blue-500 opacity-100;
+}
+
+.testimonials-swiper {
+  @apply pb-12; /* Space for pagination dots */
+}
+
+.testimonials-swiper .swiper-slide {
+  @apply h-auto; /* Make slides equal height */
+}

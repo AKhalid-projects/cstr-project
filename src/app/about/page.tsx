@@ -5,6 +5,12 @@ import { GradientBackground } from '@/components/ui/gradient-background'
 import { ArrowRight, Code2, Beaker, Cpu, BookOpen, Check, Activity, Award, Star } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination, Autoplay } from 'swiper/modules'
+
+// Import Swiper styles
+import 'swiper/css'
+import 'swiper/css/pagination'
 
 interface Testimonial {
   name: string
@@ -35,6 +41,34 @@ const testimonials: Testimonial[] = [
     rating: 4.4,
     userType: "Graduate Student",
     university: "Arabian Gulf University"
+  },
+  {
+    name: "Dr. Ali Al-Qasim",
+    message: "The platform's ability to demonstrate complex control scenarios in real-time has greatly enhanced my teaching methodology. It's an invaluable resource.",
+    rating: 4.8,
+    userType: "Associate Professor",
+    university: "University of Bahrain"
+  },
+  {
+    name: "Fatima Al-Khalifa",
+    message: "As a chemical engineering student, this simulator has been crucial in helping me visualize and understand process dynamics. The interface is intuitive and user-friendly.",
+    rating: 4.7,
+    userType: "Senior Student",
+    university: "Polytechnic Bahrain"
+  },
+  {
+    name: "Dr. James Wilson",
+    message: "The integration of theory and practical application in this platform is outstanding. It's particularly effective for demonstrating the impact of different control strategies.",
+    rating: 4.9,
+    userType: "Visiting Professor",
+    university: "Arabian Gulf University"
+  },
+  {
+    name: "Mariam Al-Dosari",
+    message: "The real-time feedback and interactive nature of the simulator have significantly improved my understanding of control systems. An excellent learning tool!",
+    rating: 4.6,
+    userType: "Graduate Student",
+    university: "University of Bahrain"
   }
 ]
 
@@ -338,38 +372,59 @@ export default function AboutPage() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <Swiper
+            modules={[Pagination, Autoplay]}
+            spaceBetween={32}
+            slidesPerView={1}
+            pagination={{ clickable: true }}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+            }}
+            breakpoints={{
+              // When window width is >= 768px
+              768: {
+                slidesPerView: 2,
+              },
+              // When window width is >= 1024px
+              1024: {
+                slidesPerView: 3,
+              },
+            }}
+            className="testimonials-swiper"
+          >
             {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={testimonial.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
-                viewport={{ once: true }}
-                className="relative group h-full"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl transform group-hover:scale-105 transition-transform duration-300" />
-                <div className="relative bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 hover:border-blue-500/50 transition-colors duration-300 h-full flex flex-col">
-                  {/* Rating */}
-                  <div className="mb-4">
-                    <RatingStars rating={testimonial.rating} />
-                  </div>
+              <SwiperSlide key={testimonial.name}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.2 }}
+                  viewport={{ once: true }}
+                  className="relative group h-full"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl transform group-hover:scale-105 transition-transform duration-300" />
+                  <div className="relative bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 hover:border-blue-500/50 transition-colors duration-300 h-full flex flex-col">
+                    {/* Rating */}
+                    <div className="mb-4">
+                      <RatingStars rating={testimonial.rating} />
+                    </div>
 
-                  {/* Message */}
-                  <p className="text-gray-300 mb-6 flex-grow">
-                    "{testimonial.message}"
-                  </p>
+                    {/* Message */}
+                    <p className="text-gray-300 mb-6 flex-grow">
+                      "{testimonial.message}"
+                    </p>
 
-                  {/* User Info */}
-                  <div className="pt-4 border-t border-gray-700/50">
-                    <p className="text-white font-semibold">{testimonial.name}</p>
-                    <p className="text-sm text-gray-400">{testimonial.userType}</p>
-                    <p className="text-sm text-gray-400">{testimonial.university}</p>
+                    {/* User Info */}
+                    <div className="pt-4 border-t border-gray-700/50">
+                      <p className="text-white font-semibold">{testimonial.name}</p>
+                      <p className="text-sm text-gray-400">{testimonial.userType}</p>
+                      <p className="text-sm text-gray-400">{testimonial.university}</p>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
         </div>
       </section>
     </div>
