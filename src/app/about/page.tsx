@@ -208,14 +208,6 @@ export default function AboutPage() {
                 Users can adjust control parameters and immediately see
                 the effects on the system, facilitating a deeper understanding of process control.
               </p>
-              <ul className="space-y-3">
-                {['Dynamic Process Models', 'Real-time Visualization', 'Parameter Tuning'].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-gray-400">
-                    <Check className="w-5 h-5 text-purple-400" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
 
             {/* Simulation Environment Card */}
@@ -230,14 +222,6 @@ export default function AboutPage() {
                 Allows for the implementation of various control strategies such as PID,
                 feedforward, and system identification.
               </p>
-              <ul className="space-y-3">
-                {['Dynamic Process Models', 'Real-time Visualization', 'Parameter Tuning'].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-gray-400">
-                    <Check className="w-5 h-5 text-purple-400" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
 
             {/* Assessment Card */}
@@ -252,14 +236,6 @@ export default function AboutPage() {
                 Offers industry operators a user-friendly tool for simulating
                 and optimizing process control.
               </p>
-              <ul className="space-y-3">
-                {['Skill Assessment', 'Performance Analytics', 'Certification Path'].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-gray-400">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
 
