@@ -61,10 +61,11 @@ export default function ContactPage() {
 
       setStatus({ loading: false, error: null, success: true })
       setFormData({ firstName: '', lastName: '', email: '', message: '' })
-    } catch (error) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to send message. Please try again.'
       setStatus({ 
         loading: false, 
-        error: 'Failed to send message. Please try again.', 
+        error: errorMessage, 
         success: false 
       })
     }
