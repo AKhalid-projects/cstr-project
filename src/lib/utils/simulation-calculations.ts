@@ -62,7 +62,7 @@ export function calculateControlOutput(state: SimulationState, tank1Level: numbe
 
 export function calculateTankLevels(state: SimulationState): SimulationState {
   // Convert controller output (%) to inlet flow rate (m³/s)
-  const maxInFlow = 10 / (60 * 1000); // Convert 10 L/min to m³/s
+  const maxInFlow = 100 / (60 * 1000); // Convert 10 L/min to m³/s
   const inFlow = (state.controllerOutput / 100) * maxInFlow;
   
   // Tank dynamics
