@@ -335,13 +335,13 @@ const teamMembers = [
   {
     name: 'Khlod Abd Allatif Matar',
 
-    emoji: '👩‍🔬',
+    emoji: '👩‍💻',
     linkedin: 'http://linkedin.com/in/khulood-hilal-32a5a8242'
   },
   {
     name: 'Jumana Mohamed Rashdan',
 
-    emoji: '👩‍🎨',
+    emoji: '👩‍💻',
     linkedin: 'http://linkedin.com/in/jumana-rashdan-bb63b824a'
   }
 ] 

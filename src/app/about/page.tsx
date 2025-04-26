@@ -108,34 +108,13 @@ export default function AboutPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
       <GradientBackground />
 
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              About the Project
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              An advanced simulation platform for understanding and experimenting with
-              PID control systems in real-world applications.
-            </p>
-          </motion.div>
-        </div>
-      </section>
 
       {/* What is CSTR Simulator? */}
       <section className="py-24 relative overflow-hidden">
-        {/* Move background elements below content with negative z-index */}
-        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px] -z-10" />
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-blue-500/5 -z-20" />
+
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="text-center items-center">
             {/* Content */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -159,10 +138,7 @@ export default function AboutPage() {
                   learning experience in system behavior and control strategies.
                 </p>
               </div>
-
-
-
-              <div className="flex gap-4">
+              <div className="gap-4">
                 <Link href="/tuning">
                   <Button
                     size="lg"
@@ -172,23 +148,6 @@ export default function AboutPage() {
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
-              </div>
-            </motion.div>
-
-            {/* Image/Animation */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="relative lg:h-[600px] rounded-2xl overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 backdrop-blur-sm border border-gray-700/50 rounded-2xl -z-10" />
-              <div className="relative h-full flex items-center justify-center">
-                {/* Replace this div with your actual simulation preview or screenshot */}
-                <div className="w-full aspect-square bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl p-8 flex items-center justify-center">
-                  <Activity className="w-24 h-24 text-white/20" />
-                </div>
               </div>
             </motion.div>
           </div>

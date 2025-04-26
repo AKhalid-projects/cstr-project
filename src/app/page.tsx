@@ -103,7 +103,7 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="grid lg:grid-cols-2 gap-12 items-center"
+            className="text-center items-center"
           >
             <div>
               <h2 className="text-4xl font-bold text-white mb-6">
@@ -118,10 +118,6 @@ export default function HomePage() {
                   Start Learning
                 </Button>
               </Link>
-            </div>
-            <div className="relative aspect-video rounded-lg overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 backdrop-blur-sm" />
-              {/* Add demo video or animation here */}
             </div>
           </motion.div>
         </div>
