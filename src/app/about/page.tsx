@@ -2,11 +2,13 @@
 
 import { motion } from 'framer-motion'
 import { GradientBackground } from '@/components/ui/gradient-background'
-import { ArrowRight, Code2, Beaker, Cpu, BookOpen, Activity, Award, Star } from 'lucide-react'
+import { ArrowRight, Code2, Beaker, Cpu, BookOpen, Activity, Award, Star, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination, Autoplay } from 'swiper/modules'
+import { useState, useEffect } from 'react'
+import TestimonialModal from '@/components/testimonials/TestimonialModal'
 
 // Import Swiper styles
 import 'swiper/css'
@@ -20,7 +22,8 @@ interface Testimonial {
   university: string
 }
 
-const testimonials: Testimonial[] = [
+// Initial testimonials
+const initialTestimonials: Testimonial[] = [
   {
     name: "Ahmed Al-Sayed",
     message: "ProcessDynX has transformed how I understand control systems. The interactive simulations make complex concepts tangible and easier to grasp.",
@@ -104,6 +107,42 @@ const RatingStars = ({ rating }: { rating: number }) => {
 }
 
 export default function AboutPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
+  const [initialTestimonialsList, setInitialTestimonialsList] = useState<Testimonial[]>(initialTestimonials)
+
+  // Load testimonials from localStorage on component mount
+  useEffect(() => {
+    const savedTestimonials = localStorage.getItem('testimonials')
+    const savedInitialTestimonials = localStorage.getItem('initialTestimonials')
+    
+    if (savedTestimonials) {
+      setTestimonials(JSON.parse(savedTestimonials))
+    } else {
+      setTestimonials(initialTestimonials)
+      localStorage.setItem('testimonials', JSON.stringify(initialTestimonials))
+    }
+
+    if (savedInitialTestimonials) {
+      setInitialTestimonialsList(JSON.parse(savedInitialTestimonials))
+    } else {
+      setInitialTestimonialsList(initialTestimonials)
+      localStorage.setItem('initialTestimonials', JSON.stringify(initialTestimonials))
+    }
+  }, [])
+
+  const handleAddTestimonial = (newTestimonial: Testimonial) => {
+    // Update current testimonials
+    const updatedTestimonials = [...testimonials, newTestimonial]
+    setTestimonials(updatedTestimonials)
+    localStorage.setItem('testimonials', JSON.stringify(updatedTestimonials))
+
+    // Update initial testimonials
+    const updatedInitialTestimonials = [...initialTestimonialsList, newTestimonial]
+    setInitialTestimonialsList(updatedInitialTestimonials)
+    localStorage.setItem('initialTestimonials', JSON.stringify(updatedInitialTestimonials))
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
       <GradientBackground />
@@ -310,82 +349,85 @@ export default function AboutPage() {
       {/* Testimonials Section */}
       <section className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-blue-500/5" />
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-purple-500/5 -z-10" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-bold text-white mb-6">
-              What Our Users Say About
-              <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
-                {" "}ProcessDynX
-              </span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Hear from students and educators who have experienced the power of interactive learning
-            </p>
-          </motion.div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center mb-12 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <h2 className="text-4xl font-bold text-white mb-6">
+                What Our Users Say
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Hear from students, professors, and professionals who have used our platform
+              </p>
+            </motion.div>
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 relative z-10"
+            >
+              <Plus className="w-4 h-4" />
+              Add Testimonial
+            </Button>
+          </div>
 
           <Swiper
             modules={[Pagination, Autoplay]}
-            spaceBetween={32}
+            spaceBetween={30}
             slidesPerView={1}
             pagination={{ clickable: true }}
-            autoplay={{
-              delay: 5000,
-              disableOnInteraction: false,
-            }}
+            autoplay={{ delay: 5000 }}
             breakpoints={{
-              // When window width is >= 768px
-              768: {
-                slidesPerView: 2,
-              },
-              // When window width is >= 1024px
-              1024: {
-                slidesPerView: 3,
-              },
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 }
             }}
-            className="testimonials-swiper"
+            className="pb-12"
           >
             {testimonials.map((testimonial, index) => (
-              <SwiperSlide key={testimonial.name}>
+              <SwiperSlide key={index}>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.2 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  className="relative group h-full"
+                  className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 h-full"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl transform group-hover:scale-105 transition-transform duration-300" />
-                  <div className="relative bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 hover:border-blue-500/50 transition-colors duration-300 h-full flex flex-col">
-                    {/* Rating */}
-                    <div className="mb-4">
-                      <RatingStars rating={testimonial.rating} />
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 flex items-center justify-center">
+                      <span className="text-xl font-semibold text-white">
+                        {testimonial.name.charAt(0)}
+                      </span>
                     </div>
-
-                    {/* Message */}
-                    <p className="text-gray-300 mb-6 flex-grow">
-                    &quot;@{testimonial.message}&quot;
-                    </p>
-
-                    {/* User Info */}
-                    <div className="pt-4 border-t border-gray-700/50">
-                      <p className="text-white font-semibold">{testimonial.name}</p>
-                      <p className="text-sm text-gray-400">{testimonial.userType}</p>
-                      <p className="text-sm text-gray-400">{testimonial.university}</p>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">
+                        {testimonial.name}
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        {testimonial.userType} at {testimonial.university}
+                      </p>
                     </div>
                   </div>
+                  <RatingStars rating={testimonial.rating} />
+                  <p className="mt-4 text-gray-300">
+                    {testimonial.message}
+                  </p>
                 </motion.div>
               </SwiperSlide>
             ))}
           </Swiper>
         </div>
       </section>
+
+      <TestimonialModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleAddTestimonial}
+      />
     </div>
   )
 }
