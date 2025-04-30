@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import 'chart.js/auto'
+import { ControlStrategy } from '@/lib/types'
 
 interface SimulationGraphsProps {
   tank1Level: number
@@ -10,6 +11,13 @@ interface SimulationGraphsProps {
   controllerOutput: number
   pumpFlow: number
   setpoint: number
+  controlStrategy: ControlStrategy
+  pidComponents?: {
+    proportional: number
+    integral: number
+    derivative: number
+    feedforward?: number
+  }
 }
 
 const MAX_POINTS = 100
@@ -19,7 +27,9 @@ export default function SimulationGraphs({
   tank2Level,
   controllerOutput,
   pumpFlow,
-  setpoint
+  setpoint,
+  controlStrategy,
+  pidComponents
 }: SimulationGraphsProps) {
   const [time, setTime] = useState<number[]>([])
   const [tank1Data, setTank1Data] = useState<number[]>([])
@@ -27,6 +37,10 @@ export default function SimulationGraphs({
   const [outputData, setOutputData] = useState<number[]>([])
   const [setpointData, setSetpointData] = useState<number[]>([])
   const [pumpData, setPumpData] = useState<number[]>([])
+  const [proportionalData, setProportionalData] = useState<number[]>([])
+  const [integralData, setIntegralData] = useState<number[]>([])
+  const [derivativeData, setDerivativeData] = useState<number[]>([])
+  const [feedforwardData, setFeedforwardData] = useState<number[]>([])
 
   // Update data points
   useEffect(() => {
@@ -47,7 +61,16 @@ export default function SimulationGraphs({
     setOutputData(prev => updateData(prev, controllerOutput))
     setSetpointData(prev => updateData(prev, setpoint))
     setPumpData(prev => updateData(prev, pumpFlow))
-  }, [tank1Level, tank2Level, controllerOutput, pumpFlow, setpoint])
+
+    if (pidComponents) {
+      setProportionalData(prev => updateData(prev, pidComponents.proportional))
+      setIntegralData(prev => updateData(prev, pidComponents.integral))
+      setDerivativeData(prev => updateData(prev, pidComponents.derivative))
+      if (pidComponents.feedforward !== undefined) {
+        setFeedforwardData(prev => updateData(prev, pidComponents.feedforward!))
+      }
+    }
+  }, [tank1Level, tank2Level, controllerOutput, pumpFlow, setpoint, pidComponents])
 
   const commonOptions = {
     responsive: true,
@@ -91,6 +114,14 @@ export default function SimulationGraphs({
         borderColor: 'rgb(168, 85, 247)',
         backgroundColor: 'rgba(168, 85, 247, 0.1)',
         tension: 0.4
+      },
+      {
+        label: 'Setpoint',
+        data: setpointData,
+        borderColor: 'rgb(234, 179, 8)',
+        backgroundColor: 'rgba(234, 179, 8, 0.1)',
+        tension: 0.4,
+        borderDash: [5, 5]
       }
     ]
   }
@@ -106,19 +137,46 @@ export default function SimulationGraphs({
         tension: 0.4
       },
       {
-        label: 'Setpoint',
-        data: setpointData,
-        borderColor: 'rgb(234, 179, 8)',
-        backgroundColor: 'rgba(234, 179, 8, 0.1)',
-        tension: 0.4
-      },
-      {
         label: 'Pump Flow',
         data: pumpData,
         borderColor: 'rgb(168, 85, 247)',
         backgroundColor: 'rgba(168, 85, 247, 0.1)',
         tension: 0.4
       }
+    ]
+  }
+
+  const pidComponentsData = {
+    labels: time,
+    datasets: [
+      {
+        label: 'Proportional',
+        data: proportionalData,
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4
+      },
+      {
+        label: 'Integral',
+        data: integralData,
+        borderColor: 'rgb(16, 185, 129)',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        tension: 0.4
+      },
+      {
+        label: 'Derivative',
+        data: derivativeData,
+        borderColor: 'rgb(245, 158, 11)',
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        tension: 0.4
+      },
+      ...(pidComponents?.feedforward !== undefined ? [{
+        label: 'Feedforward',
+        data: feedforwardData,
+        borderColor: 'rgb(236, 72, 153)',
+        backgroundColor: 'rgba(236, 72, 153, 0.1)',
+        tension: 0.4
+      }] : [])
     ]
   }
 
@@ -139,6 +197,16 @@ export default function SimulationGraphs({
         </div>
         <Line data={controlSignalsData} options={commonOptions} />
       </div>
+
+      {controlStrategy !== 'MANUAL' && pidComponents && (
+        <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+            <h3 className="text-sm font-medium text-gray-300">PID Components</h3>
+          </div>
+          <Line data={pidComponentsData} options={commonOptions} />
+        </div>
+      )}
     </div>
   )
 } 

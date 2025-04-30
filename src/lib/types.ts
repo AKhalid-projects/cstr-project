@@ -1,0 +1,1 @@
+export type ControlStrategy = 'MANUAL' | 'PID' | 'PID_FEEDFORWARD' | 'PI'; 

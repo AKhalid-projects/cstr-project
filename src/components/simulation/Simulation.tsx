@@ -4,26 +4,16 @@ import { Card } from '@/components/ui/Card'
 import { Target } from 'lucide-react'
 import WaterFlow from './visualization/WaterFlow'
 import SchematicTank from './visualization/SchematicTank'
+import { SimulationState } from '@/lib/types/simulation'
 
 interface SimulationProps {
   controlParameters: {
-    kp: number;
-    ki: number;
-    kd: number;
+    kc: number;
+    ti: number;
+    td: number;
     setpoint: number;
   };
-  systemParameters: {
-    tank1: {
-      height: number;
-      maxHeight: number;
-    };
-    tank2: {
-      height: number;
-      maxHeight: number;
-    };
-    controllerOutput: number;
-    pumpFlow: number;
-  };
+  systemParameters: SimulationState;
 }
 
 export default function Simulation({ controlParameters, systemParameters }: SimulationProps) {
@@ -73,16 +63,16 @@ export default function Simulation({ controlParameters, systemParameters }: Simu
           </div>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between text-gray-300">
-              <span>Kp:</span>
-              <span className="font-mono text-blue-400">{controlParameters.kp.toFixed(2)}</span>
+              <span>Kc:</span>
+              <span className="font-mono text-blue-400">{controlParameters.kc.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-gray-300">
-              <span>Ki:</span>
-              <span className="font-mono text-purple-400">{controlParameters.ki.toFixed(2)}</span>
+              <span>Ti:</span>
+              <span className="font-mono text-purple-400">{controlParameters.ti.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-gray-300">
-              <span>Kd:</span>
-              <span className="font-mono text-green-400">{controlParameters.kd.toFixed(2)}</span>
+              <span>Td:</span>
+              <span className="font-mono text-green-400">{controlParameters.td.toFixed(2)}</span>
             </div>
           </div>
         </motion.div>
