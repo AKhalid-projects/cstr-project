@@ -1,23 +1,41 @@
-import { TankParams } from '@/lib/utils/simulation-calculations';
-
-export type ControlStrategy = 'PID' | 'PID_FEEDFORWARD' | 'PI' | 'MANUAL';
+export type ControlStrategy = 'MANUAL' | 'PID' | 'PID_FEEDFORWARD' | 'PI';
+export type FeedforwardModel = 'PROCESS' | 'DISTURBANCE';
 
 export interface SimulationState {
-  tank1: TankParams
-  tank2: TankParams
-  controllerOutput: number
-  pumpFlow: number
-  time: number
+  tank1: {
+    area: number;
+    height: number;
+    maxHeight: number;
+    outletArea: number;
+  };
+  tank2: {
+    area: number;
+    height: number;
+    maxHeight: number;
+    outletArea: number;
+  };
+  controllerOutput: number;
+  pumpFlow: number;
+  time: number;
   controller: {
-    kp: number
-    ki: number
-    kd: number
-    setpoint: number
-    errorSum: number
-    lastError: number
-  }
-  isRunning: boolean
-  controlStrategy: ControlStrategy
+    kc: number;
+    ti: number;
+    td: number;
+    setpoint: number;
+    errorSum: number;
+    lastError: number;
+  };
+  isRunning: boolean;
+  controlStrategy: ControlStrategy;
+  enableNoise: boolean;
+  noiseIntensity: number;
+  inputType: 'STEP' | 'RAMP';
+  pidComponents?: {
+    proportional: number;
+    integral: number;
+    derivative: number;
+  };
+  feedforwardModel?: FeedforwardModel;
 }
 
 // Remove duplicate interfaces and consolidate props

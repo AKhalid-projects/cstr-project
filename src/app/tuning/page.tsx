@@ -11,9 +11,7 @@ import { Button } from '@/components/ui/Button'
 import SimulationControls from '@/components/simulation/controls/SimulationControls';
 import { initialState, calculateTankLevels } from '@/lib/utils/simulation-calculations'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { ControlStrategy } from '@/lib/types/simulation';
-import { SimulationState } from '@/lib/types/simulation'
-import { Switch } from "@/components/ui/switch"
+import { ControlStrategy, FeedforwardModel } from '@/lib/types/simulation';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { useSimulationData } from '@/hooks/simulation/useSimulationData';
 import { Download } from 'lucide-react';
@@ -25,7 +23,6 @@ export default function TuningPage() {
     const [ti, setTi] = useState(state.controller.ti.toString());
     const [td, setTd] = useState(state.controller.td.toString());
     const [setpoint, setSetpoint] = useState(state.controller.setpoint.toString());
-    const [noiseIntensity, setNoiseIntensity] = useState(1.0); // Default noise intensity
 
     // Start simulation effect
     useEffect(() => {
@@ -81,23 +78,6 @@ export default function TuningPage() {
         updateState({
             ...initialState,
             isRunning: false
-        });
-    };
-
-    const controlStrategies = [
-        { value: 'PID', label: 'PID Control' },
-        { value: 'PID_FEEDFORWARD', label: 'PID with Feed Forward' },
-        { value: 'PI', label: 'PI Control' }
-    ];
-
-    const handleStrategyChange = (value: string) => {
-        updateState({
-            controlStrategy: value as ControlStrategy,
-            controller: {
-                ...state.controller,
-                errorSum: 0,    // Reset integral term
-                lastError: 0    // Reset derivative term
-            }
         });
     };
 
@@ -197,25 +177,41 @@ export default function TuningPage() {
                                 </div>
                                 <div className="p-6">
                                     <div className="space-y-6">
-                                        <Select
-                                            value={state.controlStrategy}
-                                            onValueChange={handleStrategyChange}
-                                        >
-                                            <SelectTrigger className="w-full bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors">
-                                                <SelectValue placeholder="Select control strategy" />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-gray-800 border-white/[0.05]">
-                                                {controlStrategies.map((strategy) => (
-                                                    <SelectItem 
-                                                        key={strategy.value} 
-                                                        value={strategy.value}
-                                                        className="text-white hover:bg-white/[0.05] transition-colors"
-                                                    >
-                                                        {strategy.label}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                                                Control Strategy
+                                            </label>
+                                            <select
+                                                value={state.controlStrategy}
+                                                onChange={(e) => updateState({
+                                                    controlStrategy: e.target.value as ControlStrategy
+                                                })}
+                                                className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            >
+                                                <option value="MANUAL">Manual</option>
+                                                <option value="PID">PID</option>
+                                                <option value="PID_FEEDFORWARD">PID with Feedforward</option>
+                                                <option value="PI">PI</option>
+                                            </select>
+                                        </div>
+
+                                        {state.controlStrategy === 'PID_FEEDFORWARD' && (
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-300 mb-1">
+                                                    Feedforward Model
+                                                </label>
+                                                <select
+                                                    value={state.feedforwardModel}
+                                                    onChange={(e) => updateState({
+                                                        feedforwardModel: e.target.value as FeedforwardModel
+                                                    })}
+                                                    className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                >
+                                                    <option value="PROCESS">Process Model</option>
+                                                    <option value="DISTURBANCE">Disturbance Model</option>
+                                                </select>
+                                            </div>
+                                        )}
 
                                         <div className="space-y-4">
                                             <div className="space-y-2">
