@@ -14,50 +14,59 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { ControlStrategy } from '@/lib/types/simulation';
 import { SimulationState } from '@/lib/types/simulation'
 import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { useSimulationData } from '@/hooks/simulation/useSimulationData';
+import { Download } from 'lucide-react';
 
 export default function TuningPage() {
     const { state, updateControlParams, updateState, isRunning, startSimulation, stopSimulation } = useSimulationState();
-    const [kp, setKp] = useState(state.controller.kp.toString());
-    const [ki, setKi] = useState(state.controller.ki.toString());
-    const [kd, setKd] = useState(state.controller.kd.toString());
+    const { addDataPoint, exportData, getDataPointCount } = useSimulationData();
+    const [kc, setKc] = useState(state.controller.kc.toString());
+    const [ti, setTi] = useState(state.controller.ti.toString());
+    const [td, setTd] = useState(state.controller.td.toString());
+    const [setpoint, setSetpoint] = useState(state.controller.setpoint.toString());
     const [noiseIntensity, setNoiseIntensity] = useState(1.0); // Default noise intensity
 
     // Start simulation effect
     useEffect(() => {
         const interval = isRunning ? setInterval(() => {
-            const newState = calculateTankLevels(state)
+            const newState = calculateTankLevels(state);
             updateState({
                 ...newState,
                 isRunning
-            })
+            });
+            // Add data point for each simulation step
+            addDataPoint(newState);
         }, 100) : null;
 
         return () => {
             if (interval) clearInterval(interval);
-        }
-    }, [isRunning, state, updateState]);
+        };
+    }, [isRunning, state, updateState, addDataPoint]);
 
     // Update local state when controller parameters change
     useEffect(() => {
-        setKp(state.controller.kp.toString());
-        setKi(state.controller.ki.toString());
-        setKd(state.controller.kd.toString());
+        setKc(state.controller.kc.toString());
+        setTi(state.controller.ti.toString());
+        setTd(state.controller.td.toString());
+        setSetpoint(state.controller.setpoint.toString());
     }, [state.controller]);
 
     // Handle PID parameter updates
     const handleParamUpdate = useCallback(() => {
         const params = {
-            kp: parseFloat(kp),
-            ki: parseFloat(ki),
-            kd: parseFloat(kd)
+            kc: parseFloat(kc),
+            ti: parseFloat(ti),
+            td: parseFloat(td),
+            setpoint: Math.max(0.5, Math.min(10, parseFloat(setpoint)))
         };
 
-        if (!isNaN(params.kp) && !isNaN(params.ki) && !isNaN(params.kd)) {
+        if (!isNaN(params.kc) && !isNaN(params.ti) && !isNaN(params.td) && !isNaN(params.setpoint)) {
             updateControlParams({
                 controller: params
             });
         }
-    }, [kp, ki, kd, updateControlParams]);
+    }, [kc, ti, td, setpoint, updateControlParams]);
 
     const handleStartStop = () => {
         if (isRunning) {
@@ -92,6 +101,19 @@ export default function TuningPage() {
         });
     };
 
+    // Handle setpoint changes
+    const handleSetpointChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSetpoint(value);
+        // Only update if the value is within bounds
+        const numValue = parseFloat(value);
+        if (!isNaN(numValue) && numValue >= 0.5 && numValue <= 10) {
+            updateControlParams({
+                controller: { setpoint: numValue }
+            });
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-900">
             <main className="container mx-auto px-4 py-8">
@@ -124,8 +146,183 @@ export default function TuningPage() {
                             >
                                 ↺ Reset
                             </Button>
+                            <Button
+                                variant="outline"
+                                onClick={exportData}
+                                disabled={getDataPointCount() === 0}
+                                className="h-11 text-sm font-medium shadow-lg hover:shadow-gray-500/20 transition-all"
+                            >
+                                <Download className="w-4 h-4 mr-2" />
+                                Export Data
+                            </Button>
                         </div>
                     </div>
+
+                    {/* Mode Selection */}
+                    <Tabs defaultValue="manual" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="manual">Manual Control</TabsTrigger>
+                            <TabsTrigger value="pid">PID Control</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="manual">
+                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
+                                <div className="p-6 border-b border-white/[0.05]">
+                                    <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                                        System Parameters (Manual Controls)
+                                    </h2>
+                                </div>
+                                <div className="p-6">
+                                    <SimulationControls
+                                        controllerOutput={state.controllerOutput}
+                                        onControllerOutputChange={(value) => updateState({ 
+                                            controllerOutput: value 
+                                        })}
+                                        pumpFlow={state.pumpFlow}
+                                        onPumpFlowChange={(value) => updateState({ 
+                                            pumpFlow: value 
+                                        })}
+                                        disabled={!isRunning}
+                                    />
+                                </div>
+                            </Card>
+                        </TabsContent>
+                        <TabsContent value="pid">
+                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
+                                <div className="p-6 border-b border-white/[0.05]">
+                                    <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+                                        PID Control Parameters
+                                    </h2>
+                                </div>
+                                <div className="p-6">
+                                    <div className="space-y-6">
+                                        <Select
+                                            value={state.controlStrategy}
+                                            onValueChange={handleStrategyChange}
+                                        >
+                                            <SelectTrigger className="w-full bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors">
+                                                <SelectValue placeholder="Select control strategy" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-gray-800 border-white/[0.05]">
+                                                {controlStrategies.map((strategy) => (
+                                                    <SelectItem 
+                                                        key={strategy.value} 
+                                                        value={strategy.value}
+                                                        className="text-white hover:bg-white/[0.05] transition-colors"
+                                                    >
+                                                        {strategy.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <Label className="text-gray-300 flex items-center gap-2">
+                                                    <span className="w-1 h-1 rounded-full bg-blue-400"></span>
+                                                    Input Type
+                                                </Label>
+                                                <Select
+                                                    value={state.inputType}
+                                                    onValueChange={(value) => updateState({ 
+                                                        inputType: value as 'STEP' | 'RAMP',
+                                                        controller: {
+                                                            ...state.controller,
+                                                            errorSum: 0,    // Reset integral term
+                                                            lastError: 0    // Reset derivative term
+                                                        }
+                                                    })}
+                                                >
+                                                    <SelectTrigger className="w-full bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors">
+                                                        <SelectValue placeholder="Select input type" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="bg-gray-800 border-white/[0.05]">
+                                                        <SelectItem 
+                                                            value="STEP"
+                                                            className="text-white hover:bg-white/[0.05] transition-colors"
+                                                        >
+                                                            Step Input
+                                                        </SelectItem>
+                                                        <SelectItem 
+                                                            value="RAMP"
+                                                            className="text-white hover:bg-white/[0.05] transition-colors"
+                                                        >
+                                                            Ramp Input
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="setpoint" className="text-gray-300 flex items-center gap-2">
+                                                    <span className="w-1 h-1 rounded-full bg-blue-400"></span>
+                                                    Setpoint (m)
+                                                </Label>
+                                                <Input
+                                                    id="setpoint"
+                                                    type="number"
+                                                    value={setpoint}
+                                                    onChange={handleSetpointChange}
+                                                    min="0.5"
+                                                    max="10"
+                                                    step="0.1"
+                                                    className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="kc" className="text-gray-300 flex items-center gap-2">
+                                                    <span className="w-1 h-1 rounded-full bg-blue-400"></span>
+                                                    Proportional Gain (Kc)
+                                                </Label>
+                                                <Input
+                                                    id="kc"
+                                                    type="number"
+                                                    value={kc}
+                                                    onChange={(e) => setKc(e.target.value)}
+                                                    step="0.1"
+                                                    className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="ti" className="text-gray-300 flex items-center gap-2">
+                                                    <span className="w-1 h-1 rounded-full bg-green-400"></span>
+                                                    Integral Time (τi)
+                                                </Label>
+                                                <Input
+                                                    id="ti"
+                                                    type="number"
+                                                    value={ti}
+                                                    onChange={(e) => setTi(e.target.value)}
+                                                    step="0.01"
+                                                    className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
+                                                />
+                                            </div>
+
+                                            {state.controlStrategy !== 'PI' && (
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="td" className="text-gray-300 flex items-center gap-2">
+                                                        <span className="w-1 h-1 rounded-full bg-pink-400"></span>
+                                                        Derivative Time (τd)
+                                                    </Label>
+                                                    <Input
+                                                        id="td"
+                                                        type="number"
+                                                        value={td}
+                                                        onChange={(e) => setTd(e.target.value)}
+                                                        step="0.1"
+                                                        className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </TabsContent>
+                    </Tabs>
 
                     {/* Main Content Grid */}
                     <div className="grid lg:grid-cols-2 gap-8">
@@ -143,159 +340,10 @@ export default function TuningPage() {
                                     systemParameters={state}
                                 />
                             </Card>
-
-                            {/* Control Strategy Card */}
-                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
-                                <div className="p-6 border-b border-white/[0.05]">
-                                    <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
-                                        Control Strategy
-                                    </h2>
-                                </div>
-                                <div className="p-6 space-y-6">
-                                    <Select
-                                        value={state.controlStrategy}
-                                        onValueChange={handleStrategyChange}
-                                    >
-                                        <SelectTrigger className="w-full bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors">
-                                            <SelectValue placeholder="Select control strategy" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-gray-800 border-white/[0.05]">
-                                            {controlStrategies.map((strategy) => (
-                                                <SelectItem 
-                                                    key={strategy.value} 
-                                                    value={strategy.value}
-                                                    className="text-white hover:bg-white/[0.05] transition-colors"
-                                                >
-                                                    {strategy.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-
-                                    <div className="space-y-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="kp" className="text-gray-300 flex items-center gap-2">
-                                                <span className="w-1 h-1 rounded-full bg-blue-400"></span>
-                                                Proportional Gain (Kp)
-                                            </Label>
-                                            <Input
-                                                id="kp"
-                                                type="number"
-                                                value={kp}
-                                                onChange={(e) => setKp(e.target.value)}
-                                                step="0.1"
-                                                className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
-                                            />
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="ki" className="text-gray-300 flex items-center gap-2">
-                                                <span className="w-1 h-1 rounded-full bg-green-400"></span>
-                                                Integral Gain (Ki)
-                                            </Label>
-                                            <Input
-                                                id="ki"
-                                                type="number"
-                                                value={ki}
-                                                onChange={(e) => setKi(e.target.value)}
-                                                step="0.01"
-                                                className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
-                                            />
-                                        </div>
-
-                                        {state.controlStrategy !== 'PI' && (
-                                            <div className="space-y-2">
-                                                <Label htmlFor="kd" className="text-gray-300 flex items-center gap-2">
-                                                    <span className="w-1 h-1 rounded-full bg-pink-400"></span>
-                                                    Derivative Gain (Kd)
-                                                </Label>
-                                                <Input
-                                                    id="kd"
-                                                    type="number"
-                                                    value={kd}
-                                                    onChange={(e) => setKd(e.target.value)}
-                                                    step="0.1"
-                                                    className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </Card>
                         </div>
 
                         {/* Right Column */}
                         <div className="space-y-6">
-                            {/* System Parameters Card */}
-                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
-                                <div className="p-6 border-b border-white/[0.05]">
-                                    <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                                        System Parameters
-                                    </h2>
-                                </div>
-                                <div className="p-6">
-                                    <div className="space-y-6">
-                                        <div className="space-y-4">
-                                            <div className="flex items-center gap-2 text-gray-300">
-                                                <span className="w-1 h-1 rounded-full bg-blue-400"></span>
-                                                <h3 className="text-sm font-medium">Tank Configuration</h3>
-                                            </div>
-                                            <SimulationControls
-                                                controllerOutput={state.controllerOutput}
-                                                onControllerOutputChange={(value) => updateState({ 
-                                                    controllerOutput: value 
-                                                })}
-                                                pumpFlow={state.pumpFlow}
-                                                onPumpFlowChange={(value) => updateState({ 
-                                                    pumpFlow: value 
-                                                })}
-                                                disabled={!isRunning}
-                                            />
-                                        </div>
-
-                                        {/* Noise Controls */}
-                                        <div className="space-y-4">
-                                            <div className="flex items-center gap-2 text-gray-300">
-                                                <span className="w-1 h-1 rounded-full bg-purple-400"></span>
-                                                <h3 className="text-sm font-medium">Noise Configuration</h3>
-                                            </div>
-                                            <div className="flex items-center justify-between">
-                                                <Label htmlFor="noise-toggle" className="text-gray-300">
-                                                    Enable Noise
-                                                </Label>
-                                                <Switch
-                                                    id="noise-toggle"
-                                                    checked={state.enableNoise}
-                                                    onCheckedChange={(checked) => updateState({ enableNoise: checked })}
-                                                    disabled={!isRunning}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="noise-intensity" className="text-gray-300">
-                                                    Noise Intensity
-                                                </Label>
-                                                <Input
-                                                    id="noise-intensity"
-                                                    type="range"
-                                                    min="0"
-                                                    max="2"
-                                                    step="0.1"
-                                                    value={noiseIntensity}
-                                                    onChange={(e) => setNoiseIntensity(parseFloat(e.target.value))}
-                                                    disabled={!state.enableNoise || !isRunning}
-                                                    className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
-                                                />
-                                                <div className="text-sm text-gray-400">
-                                                    {noiseIntensity.toFixed(1)}x
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Card>
-
                             {/* Response Graphs Card */}
                             <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
                                 <div className="p-6 border-b border-white/[0.05]">
@@ -305,12 +353,14 @@ export default function TuningPage() {
                                     </h2>
                                 </div>
                                 <div className="p-6">
-                                    <SimulationGraphs 
-                                        tank1Level={(state.tank1.height / state.tank1.maxHeight) * 100}
-                                        tank2Level={(state.tank2.height / state.tank2.maxHeight) * 100}
+                                    <SimulationGraphs
+                                        tank1Level={state.tank1.height}
+                                        tank2Level={state.tank2.height}
                                         controllerOutput={state.controllerOutput}
                                         pumpFlow={state.pumpFlow}
                                         setpoint={state.controller.setpoint}
+                                        controlStrategy={state.controlStrategy}
+                                        pidComponents={state.pidComponents}
                                     />
                                 </div>
                             </Card>
