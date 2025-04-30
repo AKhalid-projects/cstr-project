@@ -12,15 +12,15 @@ import SimulationControls from '@/components/simulation/controls/SimulationContr
 import { initialState, calculateTankLevels } from '@/lib/utils/simulation-calculations'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { ControlStrategy } from '@/lib/types/simulation';
-import ScenarioSelector from '@/components/simulation/scenarios/ScenarioSelector'
 import { SimulationState } from '@/lib/types/simulation'
+import { Switch } from "@/components/ui/switch"
 
 export default function TuningPage() {
     const { state, updateControlParams, updateState, isRunning, startSimulation, stopSimulation } = useSimulationState();
     const [kp, setKp] = useState(state.controller.kp.toString());
     const [ki, setKi] = useState(state.controller.ki.toString());
     const [kd, setKd] = useState(state.controller.kd.toString());
-    const [setpoint, setSetpoint] = useState(state.controller.setpoint.toString());
+    const [noiseIntensity, setNoiseIntensity] = useState(1.0); // Default noise intensity
 
     // Start simulation effect
     useEffect(() => {
@@ -37,23 +37,28 @@ export default function TuningPage() {
         }
     }, [isRunning, state, updateState]);
 
+    // Update local state when controller parameters change
+    useEffect(() => {
+        setKp(state.controller.kp.toString());
+        setKi(state.controller.ki.toString());
+        setKd(state.controller.kd.toString());
+    }, [state.controller]);
+
     // Handle PID parameter updates
     const handleParamUpdate = useCallback(() => {
         const params = {
             kp: parseFloat(kp),
             ki: parseFloat(ki),
-            kd: parseFloat(kd),
-            setpoint: parseFloat(setpoint)
+            kd: parseFloat(kd)
         };
 
-        if (!isNaN(params.kp) && !isNaN(params.ki) && !isNaN(params.kd) && !isNaN(params.setpoint)) {
+        if (!isNaN(params.kp) && !isNaN(params.ki) && !isNaN(params.kd)) {
             updateControlParams({
                 controller: params
             });
         }
-    }, [kp, ki, kd, setpoint, updateControlParams]);
+    }, [kp, ki, kd, updateControlParams]);
 
-    // Handle simulation controls
     const handleStartStop = () => {
         if (isRunning) {
             stopSimulation();
@@ -63,16 +68,11 @@ export default function TuningPage() {
         }
     };
 
-    // Handle reset
     const handleReset = () => {
-        updateState(initialState);
-        setKp(initialState.controller.kp.toString());
-        setKi(initialState.controller.ki.toString());
-        setKd(initialState.controller.kd.toString());
-        setSetpoint(initialState.controller.setpoint.toString());
-        if (isRunning) {
-            stopSimulation();
-        }
+        updateState({
+            ...initialState,
+            isRunning: false
+        });
     };
 
     const controlStrategies = [
@@ -92,42 +92,21 @@ export default function TuningPage() {
         });
     };
 
-    const handleScenarioSelect = (scenarioState: Partial<SimulationState>) => {
-        updateState({
-            ...state,
-            ...scenarioState,
-            isRunning: false, // Reset simulation when changing scenario
-            tank1: { ...state.tank1, height: 0 }, // Reset tank levels
-            tank2: { ...state.tank2, height: 0 }
-        })
-        
-        // Update local state for sliders
-        if (scenarioState.controller) {
-            setKp(scenarioState.controller.kp.toString())
-            setKi(scenarioState.controller.ki.toString())
-            setKd(scenarioState.controller.kd.toString())
-        }
-    }
-
     return (
-        <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-gray-900 to-black">
-            <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] -z-10" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent -z-10" />
-            <main className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-900">
+            <main className="container mx-auto px-4 py-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    transition={{ duration: 0.5 }}
                     className="space-y-8"
                 >
-                    {/* Header Section */}
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 pb-8">
+                    {/* Header */}
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
-                            <h1 className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                                Process Control Simulator
-                            </h1>
-                            <p className="mt-3 text-gray-400 text-lg">
-                                Fine-tune your control parameters with real-time feedback
+                            <h1 className="text-3xl font-bold text-white">Control System Tuning</h1>
+                            <p className="text-gray-400 mt-2">
+                                Adjust controller parameters and observe system response
                             </p>
                         </div>
                         <div className="flex gap-4">
@@ -193,8 +172,8 @@ export default function TuningPage() {
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                    
-                                    <div className="grid grid-cols-2 gap-6 mt-4">
+
+                                    <div className="space-y-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="kp" className="text-gray-300 flex items-center gap-2">
                                                 <span className="w-1 h-1 rounded-full bg-blue-400"></span>
@@ -209,9 +188,10 @@ export default function TuningPage() {
                                                 className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
                                             />
                                         </div>
+
                                         <div className="space-y-2">
                                             <Label htmlFor="ki" className="text-gray-300 flex items-center gap-2">
-                                                <span className="w-1 h-1 rounded-full bg-purple-400"></span>
+                                                <span className="w-1 h-1 rounded-full bg-green-400"></span>
                                                 Integral Gain (Ki)
                                             </Label>
                                             <Input
@@ -219,10 +199,11 @@ export default function TuningPage() {
                                                 type="number"
                                                 value={ki}
                                                 onChange={(e) => setKi(e.target.value)}
-                                                step="0.1"
+                                                step="0.01"
                                                 className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
                                             />
                                         </div>
+
                                         {state.controlStrategy !== 'PI' && (
                                             <div className="space-y-2">
                                                 <Label htmlFor="kd" className="text-gray-300 flex items-center gap-2">
@@ -239,39 +220,88 @@ export default function TuningPage() {
                                                 />
                                             </div>
                                         )}
-                                        <div className="space-y-2">
-                                            <Label htmlFor="setpoint" className="text-gray-300 flex items-center gap-2">
-                                                <span className="w-1 h-1 rounded-full bg-pink-400"></span>
-                                                Setpoint
-                                            </Label>
-                                            <Input
-                                                id="setpoint"
-                                                type="number"
-                                                value={setpoint}
-                                                onChange={(e) => setSetpoint(e.target.value)}
-                                                step="0.1"
-                                                className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
-                                            />
-                                        </div>
                                     </div>
-                                    <Button
-                                        className="w-full mt-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-500/20 transition-all"
-                                        onClick={handleParamUpdate}
-                                    >
-                                        Update Parameters
-                                    </Button>
                                 </div>
                             </Card>
                         </div>
 
-                        {/* Right Column - Graphs and Parameters */}
+                        {/* Right Column */}
                         <div className="space-y-6">
-                            {/* Graphs Card */}
+                            {/* System Parameters Card */}
                             <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
                                 <div className="p-6 border-b border-white/[0.05]">
                                     <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-pink-400 animate-pulse"></span>
-                                        Performance Metrics
+                                        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                                        System Parameters
+                                    </h2>
+                                </div>
+                                <div className="p-6">
+                                    <div className="space-y-6">
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2 text-gray-300">
+                                                <span className="w-1 h-1 rounded-full bg-blue-400"></span>
+                                                <h3 className="text-sm font-medium">Tank Configuration</h3>
+                                            </div>
+                                            <SimulationControls
+                                                controllerOutput={state.controllerOutput}
+                                                onControllerOutputChange={(value) => updateState({ 
+                                                    controllerOutput: value 
+                                                })}
+                                                pumpFlow={state.pumpFlow}
+                                                onPumpFlowChange={(value) => updateState({ 
+                                                    pumpFlow: value 
+                                                })}
+                                                disabled={!isRunning}
+                                            />
+                                        </div>
+
+                                        {/* Noise Controls */}
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2 text-gray-300">
+                                                <span className="w-1 h-1 rounded-full bg-purple-400"></span>
+                                                <h3 className="text-sm font-medium">Noise Configuration</h3>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <Label htmlFor="noise-toggle" className="text-gray-300">
+                                                    Enable Noise
+                                                </Label>
+                                                <Switch
+                                                    id="noise-toggle"
+                                                    checked={state.enableNoise}
+                                                    onCheckedChange={(checked) => updateState({ enableNoise: checked })}
+                                                    disabled={!isRunning}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="noise-intensity" className="text-gray-300">
+                                                    Noise Intensity
+                                                </Label>
+                                                <Input
+                                                    id="noise-intensity"
+                                                    type="range"
+                                                    min="0"
+                                                    max="2"
+                                                    step="0.1"
+                                                    value={noiseIntensity}
+                                                    onChange={(e) => setNoiseIntensity(parseFloat(e.target.value))}
+                                                    disabled={!state.enableNoise || !isRunning}
+                                                    className="bg-white/[0.03] border-white/[0.05] text-white hover:bg-white/[0.05] transition-colors"
+                                                />
+                                                <div className="text-sm text-gray-400">
+                                                    {noiseIntensity.toFixed(1)}x
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+
+                            {/* Response Graphs Card */}
+                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
+                                <div className="p-6 border-b border-white/[0.05]">
+                                    <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                                        System Response
                                     </h2>
                                 </div>
                                 <div className="p-6">
@@ -281,58 +311,6 @@ export default function TuningPage() {
                                         controllerOutput={state.controllerOutput}
                                         pumpFlow={state.pumpFlow}
                                         setpoint={state.controller.setpoint}
-                                    />
-                                </div>
-                            </Card>
-
-                            {/* System Parameters Card */}
-                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
-                                <div className="p-6 border-b border-white/[0.05]">
-                                    <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-                                        System Parameters
-                                    </h2>
-                                </div>
-                                <div className="p-6">
-                                    <div className="space-y-6">
-                                        <div className="">
-                                            {/* Tank Parameters Group */}
-                                            <div className="space-y-4">
-                                                <div className="flex items-center gap-2 text-gray-300">
-                                                    <span className="w-1 h-1 rounded-full bg-blue-400"></span>
-                                                    <h3 className="text-sm font-medium">Tank Configuration</h3>
-                                                </div>
-                                                <SimulationControls
-                                                    tank1Area={state.tank1.area}
-                                                    onTank1AreaChange={(area) => updateState({
-                                                        tank1: { ...state.tank1, area }
-                                                    })}
-                                                    tank2Area={state.tank2.area}
-                                                    onTank2AreaChange={(area) => updateState({
-                                                        tank2: { ...state.tank2, area }
-                                                    })}
-                                                    controllerOutput={state.controllerOutput}
-                                                    onControllerOutputChange={(value) => updateState({ 
-                                                        controllerOutput: value 
-                                                      })}
-                                                    pumpFlow={state.pumpFlow}
-                                                    onPumpFlowChange={(value) => updateState({ 
-                                                        pumpFlow: value 
-                                                    })}
-                                                    disabled={!isRunning}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Card>
-
-                            {/* Scenario Selector Card */}
-                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
-                                <div className="p-6">
-                                    <ScenarioSelector 
-                                        onSelect={handleScenarioSelect}
-                                        disabled={isRunning}
                                     />
                                 </div>
                             </Card>
