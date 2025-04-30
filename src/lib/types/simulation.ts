@@ -1,6 +1,6 @@
 import { TankParams } from '@/lib/utils/simulation-calculations';
 
-export type ControlStrategy = 'PID' | 'PID_FEEDFORWARD' | 'PI';
+export type ControlStrategy = 'PID' | 'PID_FEEDFORWARD' | 'PI' | 'MANUAL';
 
 export interface SimulationState {
   tank1: TankParams
