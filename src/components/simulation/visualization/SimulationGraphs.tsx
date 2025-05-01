@@ -98,6 +98,19 @@ export default function SimulationGraphs({
     }
   }
 
+  // New: Control Signals graph options with y-axis 0-100
+  const controlSignalsOptions = {
+    ...commonOptions,
+    scales: {
+      ...commonOptions.scales,
+      y: {
+        ...commonOptions.scales.y,
+        min: 0,
+        max: 100
+      }
+    }
+  }
+
   const tankLevelsData = {
     labels: time,
     datasets: [
@@ -195,7 +208,7 @@ export default function SimulationGraphs({
           <div className="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
           <h3 className="text-sm font-medium text-gray-300">Control Signals</h3>
         </div>
-        <Line data={controlSignalsData} options={commonOptions} />
+        <Line data={controlSignalsData} options={controlSignalsOptions} />
       </div>
 
       {controlStrategy !== 'MANUAL' && pidComponents && (
