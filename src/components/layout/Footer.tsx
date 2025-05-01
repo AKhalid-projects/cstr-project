@@ -8,7 +8,7 @@ export function Footer() {
   return (
     <footer className="bg-gray-900 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
             <h3 className="text-xl font-bold">
@@ -74,6 +74,28 @@ export function Footer() {
             </ul>
           </div>
 
+          {/* Governed By */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
+              Governed By
+            </h3>
+            <ul className="space-y-3">
+              {governedLinks.map(member => (
+                <li key={member.name}>
+                  <a
+                    href={member.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors inline-flex items-center gap-2"
+                  >
+                    {member.name}
+                    <Linkedin className="w-4 h-4" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Contact */}
           <div>
             <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
@@ -119,5 +141,20 @@ const teamLinks = [
   {
     name: 'Mrs. Bintu Jasson',
     linkedin: 'https://www.linkedin.com/in/bintu-jasson-4a372b243'
+  }
+]
+
+const governedLinks = [
+  {
+    name: 'Shahd Mohamed Alnajdi',
+    linkedin: 'http://linkedin.com/in/shahd-alnajdi-287b4132a'
   },
+  {
+    name: 'Khlod Abd Allatif Matar',
+    linkedin: 'http://linkedin.com/in/khulood-hilal-32a5a8242'
+  },
+  {
+    name: 'Jumana Mohamed Rashdan',
+    linkedin: 'http://linkedin.com/in/jumana-rashdan-bb63b824a'
+  }
 ] 
