@@ -20,6 +20,7 @@
     "@react-three/drei": "^10.0.2",
     "@react-three/fiber": "^9.0.4",
     "chart.js": "^4.4.8",
+    "chartjs-plugin-zoom": "^2.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.4.7",

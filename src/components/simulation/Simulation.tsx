@@ -14,7 +14,7 @@ interface SimulationProps {
     setpoint: number;
   };
   systemParameters: SimulationState;
-  controlStrategy: string;
+  controlStrategy: 'MANUAL' | 'PID' | 'PI' | 'PID_FEEDFORWARD';
 }
 
 export default function Simulation({ controlParameters, systemParameters, controlStrategy }: SimulationProps) {
@@ -24,25 +24,35 @@ export default function Simulation({ controlParameters, systemParameters, contro
   return (
     <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur-sm overflow-hidden">
       <div className="space-y-8 p-6">
-        {/* 3D Visualization */}
-        <div className="grid grid-cols-1 gap-1">
-          {/* Upper Tank */}
-          <div className="relative bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6 w-[300px] mx-auto">
-            <SchematicTank level={tank1LevelPercent} />
+        {/* Tank Visualization */}
+        <div className="grid grid-cols-1 gap-4">
+          {/* Tank 1 */}
+          <div className="flex flex-col items-center gap-2">
+            <h3 className="text-sm font-medium text-gray-300">Tank 1</h3>
+            <div className="relative bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6 w-[300px]">
+              <SchematicTank level={tank1LevelPercent} />
+            </div>
           </div>
 
           {/* Water Flow with Valve */}
-          <div className="h-16 w-[300px] mx-auto">
-            <WaterFlow 
-              isFlowing={tank1LevelPercent > 0}
-              flowRate={systemParameters.controllerOutput}
-              height="h-16"
-            />
+          <div className="flex flex-col items-center gap-2">
+            <h3 className="text-sm font-medium text-gray-300">Flow Control</h3>
+            <div className="h-16 w-[300px] relative">
+              <WaterFlow 
+                isFlowing={tank1LevelPercent > 0}
+                flowRate={systemParameters.controllerOutput}
+                height="h-16"
+              />
+            </div>
+            <div className="text-sm text-gray-400">{systemParameters.controllerOutput.toFixed(1)}%</div>
           </div>
 
-          {/* Lower Tank */}
-          <div className="relative bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6 w-[300px] mx-auto">
-            <SchematicTank level={tank2LevelPercent} />
+          {/* Tank 2 */}
+          <div className="flex flex-col items-center gap-2">
+            <h3 className="text-sm font-medium text-gray-300">Tank 2</h3>
+            <div className="relative bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6 w-[300px]">
+              <SchematicTank level={tank2LevelPercent} />
+            </div>
           </div>
         </div>
 
@@ -62,22 +72,24 @@ export default function Simulation({ controlParameters, systemParameters, contro
               <span>Tank 2: {tank2LevelPercent.toFixed(1)}%</span>
             </div>
           </div>
-          <div className="space-y-1 text-sm">
-            <div className="flex justify-between text-gray-300">
-              <span>Kc:</span>
-              <span className="font-mono text-blue-400">{controlParameters.kc.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-gray-300">
-              <span>Ti:</span>
-              <span className="font-mono text-purple-400">{controlParameters.ti.toFixed(2)}</span>
-            </div>
-            {controlStrategy !== 'PI' && (
+          {controlStrategy !== 'MANUAL' && (
+            <div className="space-y-1 text-sm">
               <div className="flex justify-between text-gray-300">
-                <span>Td:</span>
-                <span className="font-mono text-green-400">{controlParameters.td.toFixed(2)}</span>
+                <span>Kc:</span>
+                <span className="font-mono text-blue-400">{controlParameters.kc.toFixed(2)}</span>
               </div>
-            )}
-          </div>
+              <div className="flex justify-between text-gray-300">
+                <span>Ti:</span>
+                <span className="font-mono text-purple-400">{controlParameters.ti.toFixed(2)}</span>
+              </div>
+              {controlStrategy !== 'PI' && (
+                <div className="flex justify-between text-gray-300">
+                  <span>Td:</span>
+                  <span className="font-mono text-green-400">{controlParameters.td.toFixed(2)}</span>
+                </div>
+              )}
+            </div>
+          )}
         </motion.div>
       </div>
     </Card>

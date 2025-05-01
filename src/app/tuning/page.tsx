@@ -339,45 +339,40 @@ export default function TuningPage() {
                     </Tabs>
 
                     {/* Main Content Grid */}
-                    <div className="grid lg:grid-cols-2 gap-8">
-                        {/* Left Column */}
-                        <div className="space-y-6">
-                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
-                                <div className="p-6 border-b border-white/[0.05]">
-                                    <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-                                        Simulation View
-                                    </h2>
-                                </div>
-                                <Simulation 
-                                    controlParameters={state.controller}
-                                    systemParameters={state}
-                                    controlStrategy={state.controlStrategy}
+                    <div className="space-y-8">
+                        {/* Response Graphs Card - Full Width */}
+                        <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
+                            <div className="p-6 border-b border-white/[0.05]">
+                                <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                                    System Response
+                                </h2>
+                            </div>
+                            <div className="p-6">
+                                <SimulationGraphs
+                                    tank1Level={state.tank1.height}
+                                    tank2Level={state.tank2.height}
+                                    controllerOutput={state.controllerOutput}
+                                    pumpFlow={state.pumpFlow}
+                                    setpoint={state.controller.setpoint}
                                 />
-                            </Card>
-                        </div>
+                            </div>
+                        </Card>
 
-                        {/* Right Column */}
-                        <div className="space-y-6">
-                            {/* Response Graphs Card */}
-                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
-                                <div className="p-6 border-b border-white/[0.05]">
-                                    <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
-                                        System Response
-                                    </h2>
-                                </div>
-                                <div className="p-6">
-                                    <SimulationGraphs
-                                        tank1Level={state.tank1.height}
-                                        tank2Level={state.tank2.height}
-                                        controllerOutput={state.controllerOutput}
-                                        pumpFlow={state.pumpFlow}
-                                        setpoint={state.controller.setpoint}
-                                    />
-                                </div>
-                            </Card>
-                        </div>
+                        {/* Simulation View Card - Full Width */}
+                        <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
+                            <div className="p-6 border-b border-white/[0.05]">
+                                <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                                    Simulation View
+                                </h2>
+                            </div>
+                            <Simulation 
+                                controlParameters={state.controller}
+                                systemParameters={state}
+                                controlStrategy={state.controlStrategy}
+                            />
+                        </Card>
                     </div>
                 </motion.div>
             </main>

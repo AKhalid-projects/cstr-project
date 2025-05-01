@@ -316,8 +316,16 @@ export function calculateTankLevels(state: SimulationState): SimulationState {
   // Calculate inlet flow rate (Qi) in L/min based on controller output
   const Qi = 25.4 * (state.controllerOutput / 100);
   
-  // Convert Qi to m³/s (Qi*)
-  const Qi_star = Qi * (1/6000);
+  // Add noise to inlet flow if enabled (±1.25 L/min)
+  let noisy_Qi = Qi;
+  if (state.enableNoise) {
+    const noiseRange = 1.25; // ±1.25 L/min noise range
+    const noise = (Math.random() - 0.5) * 2 * noiseRange * state.noiseIntensity;
+    noisy_Qi += noise;
+  }
+
+  // Convert noisy Qi to m³/s (Qi*)
+  const Qi_star = noisy_Qi * (1/6000);
   
   // Calculate constants for tank outflows
   const c1 = state.tank1.outletArea * Math.sqrt(2 * GRAVITY) / Math.sqrt(state.tank1.height);
@@ -385,9 +393,9 @@ export const initialState: SimulationState = {
   },
   isRunning: false,
   controlStrategy: 'MANUAL',
-  enableNoise: false,
-  noiseIntensity: 1.0,  // Default noise intensity
-  inputType: 'STEP',  // Default to step input
+  enableNoise: true,   // Enable noise by default
+  noiseIntensity: 1.0, // Default noise intensity
+  inputType: 'STEP',   // Default to step input
   feedforwardModel: 'PROCESS'
 }
 

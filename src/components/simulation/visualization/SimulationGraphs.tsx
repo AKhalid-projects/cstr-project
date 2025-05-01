@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import 'chart.js/auto'
-import { Chart, TooltipItem, Scale } from 'chart.js'
+import { TooltipItem } from 'chart.js'
 
 interface SimulationGraphsProps {
   tank1Level: number
@@ -48,6 +48,7 @@ export default function SimulationGraphs({
     responsive: true,
     animation: { duration: 0 } as const,
     maintainAspectRatio: false,
+    aspectRatio: 2,
     elements: {
       line: { 
         borderWidth: 2,
@@ -59,10 +60,10 @@ export default function SimulationGraphs({
     },
     layout: {
       padding: {
-        left: 15,
-        right: 15,
-        top: 15,
-        bottom: 15
+        left: 25,
+        right: 25,
+        top: 25,
+        bottom: 25
       }
     },
     scales: {
@@ -76,7 +77,8 @@ export default function SimulationGraphs({
         ticks: { 
           color: 'rgba(255,255,255,0.25)', 
           font: { size: 12 },
-          stepSize: 60
+          stepSize: 60,
+          maxRotation: 0
         },
         border: {
           width: 2,
@@ -94,14 +96,15 @@ export default function SimulationGraphs({
         ticks: { 
           color: 'rgba(255,255,255,0.25)', 
           font: { size: 12 },
-          padding: 10,
+          padding: 15,
           callback: function(tickValue: number | string) {
             if (typeof tickValue !== 'number') return tickValue;
             return yMax <= 10 ? tickValue.toFixed(1) : tickValue.toFixed(0);
           },
           stepSize: yMax <= 10 ? 0.5 : 5,
           autoSkip: false,
-          maxTicksLimit: yMax <= 10 ? 21 : 21
+          maxTicksLimit: yMax <= 10 ? 21 : 21,
+          maxRotation: 0
         },
         border: {
           width: 2,
@@ -109,7 +112,8 @@ export default function SimulationGraphs({
         },
         min: 0,
         max: yMax,
-        beginAtZero: true
+        beginAtZero: true,
+        position: 'left' as const
       }
     },
     plugins: {
@@ -204,7 +208,7 @@ export default function SimulationGraphs({
           <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
           <h3 className="text-sm font-medium text-gray-300">Tank Levels</h3>
         </div>
-        <div className="h-[600px]">
+        <div className="h-[1600px]">
           <Line 
             data={tankLevelsData} 
             options={createChartOptions(10)}
@@ -217,7 +221,7 @@ export default function SimulationGraphs({
           <div className="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
           <h3 className="text-sm font-medium text-gray-300">Control Signals</h3>
         </div>
-        <div className="h-[600px]">
+        <div className="h-[1600px]">
           <Line 
             data={controlSignalsData} 
             options={createChartOptions(100)}
