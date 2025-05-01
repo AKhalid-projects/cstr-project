@@ -60,7 +60,7 @@ export default function SimulationGraphs({
     },
     layout: {
       padding: {
-        left: 25,
+        left: 50,
         right: 25,
         top: 25,
         bottom: 25
@@ -101,9 +101,9 @@ export default function SimulationGraphs({
             if (typeof tickValue !== 'number') return tickValue;
             return yMax <= 10 ? tickValue.toFixed(1) : tickValue.toFixed(0);
           },
-          stepSize: yMax <= 10 ? 0.5 : 5,
+          stepSize: yMax <= 10 ? 0.1 : 5,
           autoSkip: false,
-          maxTicksLimit: yMax <= 10 ? 21 : 21,
+          count: yMax <= 10 ? (yMax / 0.1) + 1 : 21,
           maxRotation: 0
         },
         border: {
@@ -208,7 +208,7 @@ export default function SimulationGraphs({
           <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
           <h3 className="text-sm font-medium text-gray-300">Tank Levels</h3>
         </div>
-        <div className="h-[1600px]">
+        <div className="h-[1800px]">
           <Line 
             data={tankLevelsData} 
             options={createChartOptions(10)}
@@ -221,7 +221,7 @@ export default function SimulationGraphs({
           <div className="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
           <h3 className="text-sm font-medium text-gray-300">Control Signals</h3>
         </div>
-        <div className="h-[1600px]">
+        <div className="h-[1800px]">
           <Line 
             data={controlSignalsData} 
             options={createChartOptions(100)}
