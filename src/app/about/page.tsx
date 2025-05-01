@@ -335,50 +335,50 @@ export default function AboutPage() {
           {isLoading ? (
             <div className="text-center text-white">Loading testimonials...</div>
           ) : (
-            <Swiper
-              modules={[Pagination, Autoplay]}
-              spaceBetween={30}
-              slidesPerView={1}
-              pagination={{ clickable: true }}
-              autoplay={{ delay: 5000 }}
-              breakpoints={{
-                640: { slidesPerView: 2 },
-                1024: { slidesPerView: 3 }
-              }}
-              className="pb-12"
-            >
-              {testimonials.map((testimonial, index) => (
-                <SwiperSlide key={index}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 h-full"
-                  >
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 flex items-center justify-center">
-                        <span className="text-xl font-semibold text-white">
-                          {testimonial.name.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-white">
-                          {testimonial.name}
-                        </h3>
-                        <p className="text-sm text-gray-400">
-                          {testimonial.userType} at {testimonial.university}
-                        </p>
-                      </div>
+          <Swiper
+            modules={[Pagination, Autoplay]}
+            spaceBetween={30}
+            slidesPerView={1}
+            pagination={{ clickable: true }}
+            autoplay={{ delay: 5000 }}
+            breakpoints={{
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 }
+            }}
+            className="pb-12"
+          >
+            {testimonials.map((testimonial, index) => (
+              <SwiperSlide key={index}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 h-full"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 flex items-center justify-center">
+                      <span className="text-xl font-semibold text-white">
+                        {testimonial.name.charAt(0)}
+                      </span>
                     </div>
-                    <RatingStars rating={testimonial.rating} />
-                    <p className="mt-4 text-gray-300">
-                      {testimonial.message}
-                    </p>
-                  </motion.div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">
+                        {testimonial.name}
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        {testimonial.userType} at {testimonial.university}
+                      </p>
+                    </div>
+                  </div>
+                  <RatingStars rating={testimonial.rating} />
+                  <p className="mt-4 text-gray-300">
+                    {testimonial.message}
+                  </p>
+                </motion.div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
           )}
         </div>
       </section>
