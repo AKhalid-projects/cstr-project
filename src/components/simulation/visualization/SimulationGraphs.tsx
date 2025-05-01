@@ -86,7 +86,7 @@ export default function SimulationGraphs({
         display: true,
         grid: { color: 'rgba(255, 255, 255, 0.1)' },
         ticks: { color: 'rgba(255, 255, 255, 0.5)' },
-        max: 100,
+        max: 10,
         min: 0
       }
     },

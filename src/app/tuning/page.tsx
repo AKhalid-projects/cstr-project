@@ -141,8 +141,8 @@ export default function TuningPage() {
                     {/* Mode Selection */}
                     <Tabs defaultValue="manual" className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="manual">Manual Control</TabsTrigger>
-                            <TabsTrigger value="pid">PID Control</TabsTrigger>
+                            <TabsTrigger value="manual">Manual Mode</TabsTrigger>
+                            <TabsTrigger value="pid">Control Mode</TabsTrigger>
                         </TabsList>
                         <TabsContent value="manual">
                             <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
@@ -188,7 +188,6 @@ export default function TuningPage() {
                                                 })}
                                                 className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             >
-                                                <option value="MANUAL">Manual</option>
                                                 <option value="PID">PID</option>
                                                 <option value="PID_FEEDFORWARD">PID with Feedforward</option>
                                                 <option value="PI">PI</option>
@@ -313,6 +312,25 @@ export default function TuningPage() {
                                                     />
                                                 </div>
                                             )}
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="disturbance" className="text-gray-300 flex items-center gap-2">
+                                                    <span className="w-1 h-1 rounded-full bg-yellow-400"></span>
+                                                    Disturbance (L/min)
+                                                </Label>
+                                                <input
+                                                    id="disturbance"
+                                                    type="range"
+                                                    min={0}
+                                                    max={10}
+                                                    step={0.1}
+                                                    value={state.pumpFlow}
+                                                    onChange={e => updateState({ pumpFlow: Number(e.target.value) })}
+                                                    className="w-full bg-gray-700"
+                                                    disabled={!isRunning}
+                                                />
+                                                <div className="text-gray-400 text-sm">{state.pumpFlow.toFixed(1)} L/min</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

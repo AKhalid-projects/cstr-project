@@ -1,13 +1,13 @@
 'use client'
 
 interface Tank3DProps {
-  level: number  // Level as percentage (0-100)
+  level: number  // Level in meters (0-10)
 }
 
 export default function Tank3D({ level }: Tank3DProps) {
-  const safeLevel = Math.max(0.1, Math.min(100, isNaN(level) ? 0 : level))
+  const safeLevel = Math.max(0, Math.min(10, isNaN(level) ? 0 : level))
   const tankHeight = 4
-  const waterHeight = (safeLevel / 100) * tankHeight
+  const waterHeight = (safeLevel / 10) * tankHeight
 
   return (
     <group>

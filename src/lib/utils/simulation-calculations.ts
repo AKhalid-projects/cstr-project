@@ -325,10 +325,10 @@ export function calculateTankLevels(state: SimulationState): SimulationState {
   
   // Calculate tank outflows (Q1* and Q2*)
   const Q1_star = c1 * state.tank1.height;
-  const Q2_star = c2 * state.tank2.height;  // Q2* = c2 * h2
+  const Q2_star = c2 * state.tank2.height;
   
   // Convert pump flow (D) from L/min to m³/s (D*)
-  const D_star = Math.min(10, Math.max(0, state.pumpFlow)) * (1/6000);  // Clamp pump flow between 0-10 L/min
+  const D_star = Math.min(10, Math.max(0, state.pumpFlow)) * (1/6000);
   
   // Calculate rate of change for both tanks
   const dh1_dt = (Qi_star - Q1_star) / state.tank1.area;
@@ -341,16 +341,16 @@ export function calculateTankLevels(state: SimulationState): SimulationState {
   // Calculate control output and update controller state
   const newState = calculateControlOutput(state);
   
-  // Update heights with bounds checking (0 to 8.5m)
+  // Update heights with bounds checking (0 to 10m)
   return {
     ...newState,
     tank1: { 
       ...state.tank1,
-      height: Math.max(0, Math.min(8.5, newH1))
+      height: Math.max(0, Math.min(10, newH1))
     },
     tank2: { 
       ...state.tank2,
-      height: Math.max(0, Math.min(8.5, newH2))
+      height: Math.max(0, Math.min(10, newH2))
     },
     time: state.time + TIME_STEP
   };
@@ -362,14 +362,14 @@ export function calculateTankLevels(state: SimulationState): SimulationState {
 export const initialState: SimulationState = {
   tank1: {
     area: 0.028,       // 280 cm²
-    height: 4,         // Initial height 4m
-    maxHeight: 8.5,    // Maximum height 8.5m
+    height: 5,         // Initial height 5m
+    maxHeight: 10,     // Maximum height 10m
     outletArea: 0.0002 // 2 cm² outlet
   },
   tank2: {
     area: 0.028,       // 280 cm²
-    height: 4,         // Initial height 4m
-    maxHeight: 8.5,    // Maximum height 8.5m
+    height: 5,         // Initial height 5m
+    maxHeight: 10,     // Maximum height 10m
     outletArea: 0.0002 // 2 cm² outlet
   },
   controllerOutput: 50, // Initial controller output 50%
@@ -379,7 +379,7 @@ export const initialState: SimulationState = {
     kc: 2.5,           // Proportional gain (Kc)
     ti: 0.05,          // Integral time constant (τi)
     td: 0.1,           // Derivative time constant (τd)
-    setpoint: 4,       // Target level (4 m)
+    setpoint: 5,       // Target level (5 m)
     errorSum: 0,
     lastError: 0
   },

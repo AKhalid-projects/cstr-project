@@ -62,22 +62,17 @@ export class SimulationDataManager {
       return '';
     }
 
-    // Define CSV headers
+    // Define CSV headers (remove Error, Proportional, Integral, Derivative, Feedforward)
     const headers = [
       'Time (s)',
       'Tank 1 Level (m)',
       'Tank 2 Level (m)',
       'Controller Output (%)',
       'Pump Flow (L/min)',
-      'Setpoint (m)',
-      'Error (m)',
-      'Proportional',
-      'Integral',
-      'Derivative',
-      'Feedforward'
+      'Setpoint (m)'
     ].join(',');
 
-    // Convert data points to CSV rows
+    // Convert data points to CSV rows (remove extra columns)
     const rows = this.dataPoints.map(point => {
       const values = [
         point.time.toFixed(2),
@@ -85,12 +80,7 @@ export class SimulationDataManager {
         point.tank2Level.toFixed(3),
         point.controllerOutput.toFixed(1),
         point.pumpFlow.toFixed(2),
-        point.setpoint.toFixed(2),
-        point.error?.toFixed(3) ?? '',
-        point.pidComponents?.proportional.toFixed(3) ?? '',
-        point.pidComponents?.integral.toFixed(3) ?? '',
-        point.pidComponents?.derivative.toFixed(3) ?? '',
-        point.pidComponents?.feedforward?.toFixed(3) ?? ''
+        point.setpoint.toFixed(2)
       ];
       return values.join(',');
     });
