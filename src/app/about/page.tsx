@@ -109,38 +109,47 @@ const RatingStars = ({ rating }: { rating: number }) => {
 export default function AboutPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
-  const [initialTestimonialsList, setInitialTestimonialsList] = useState<Testimonial[]>(initialTestimonials)
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Load testimonials from localStorage on component mount
+  // Load testimonials from API on component mount
   useEffect(() => {
-    const savedTestimonials = localStorage.getItem('testimonials')
-    const savedInitialTestimonials = localStorage.getItem('initialTestimonials')
-    
-    if (savedTestimonials) {
-      setTestimonials(JSON.parse(savedTestimonials))
-    } else {
-      setTestimonials(initialTestimonials)
-      localStorage.setItem('testimonials', JSON.stringify(initialTestimonials))
+    const fetchTestimonials = async () => {
+      try {
+        const response = await fetch('/api/testimonials')
+        const data = await response.json()
+        setTestimonials(data.testimonials)
+      } catch (error) {
+        console.error('Error fetching testimonials:', error)
+      } finally {
+        setIsLoading(false)
+      }
     }
 
-    if (savedInitialTestimonials) {
-      setInitialTestimonialsList(JSON.parse(savedInitialTestimonials))
-    } else {
-      setInitialTestimonialsList(initialTestimonials)
-      localStorage.setItem('initialTestimonials', JSON.stringify(initialTestimonials))
-    }
+    fetchTestimonials()
   }, [])
 
-  const handleAddTestimonial = (newTestimonial: Testimonial) => {
-    // Update current testimonials
-    const updatedTestimonials = [...testimonials, newTestimonial]
-    setTestimonials(updatedTestimonials)
-    localStorage.setItem('testimonials', JSON.stringify(updatedTestimonials))
+  const handleAddTestimonial = async (newTestimonial: Testimonial) => {
+    try {
+      const response = await fetch('/api/testimonials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newTestimonial),
+      })
 
-    // Update initial testimonials
-    const updatedInitialTestimonials = [...initialTestimonialsList, newTestimonial]
-    setInitialTestimonialsList(updatedInitialTestimonials)
-    localStorage.setItem('initialTestimonials', JSON.stringify(updatedInitialTestimonials))
+      if (!response.ok) {
+        throw new Error('Failed to add testimonial')
+      }
+
+      // Refresh testimonials after adding new one
+      const updatedResponse = await fetch('/api/testimonials')
+      const data = await updatedResponse.json()
+      setTestimonials(data.testimonials)
+    } catch (error) {
+      console.error('Error adding testimonial:', error)
+      // You might want to show an error message to the user here
+    }
   }
 
   return (
@@ -376,50 +385,54 @@ export default function AboutPage() {
             </Button>
           </div>
 
-          <Swiper
-            modules={[Pagination, Autoplay]}
-            spaceBetween={30}
-            slidesPerView={1}
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 5000 }}
-            breakpoints={{
-              640: { slidesPerView: 2 },
-              1024: { slidesPerView: 3 }
-            }}
-            className="pb-12"
-          >
-            {testimonials.map((testimonial, index) => (
-              <SwiperSlide key={index}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 h-full"
-                >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 flex items-center justify-center">
-                      <span className="text-xl font-semibold text-white">
-                        {testimonial.name.charAt(0)}
-                      </span>
+          {isLoading ? (
+            <div className="text-center text-white">Loading testimonials...</div>
+          ) : (
+            <Swiper
+              modules={[Pagination, Autoplay]}
+              spaceBetween={30}
+              slidesPerView={1}
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 5000 }}
+              breakpoints={{
+                640: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 }
+              }}
+              className="pb-12"
+            >
+              {testimonials.map((testimonial, index) => (
+                <SwiperSlide key={index}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 h-full"
+                  >
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 flex items-center justify-center">
+                        <span className="text-xl font-semibold text-white">
+                          {testimonial.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">
+                          {testimonial.name}
+                        </h3>
+                        <p className="text-sm text-gray-400">
+                          {testimonial.userType} at {testimonial.university}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white">
-                        {testimonial.name}
-                      </h3>
-                      <p className="text-sm text-gray-400">
-                        {testimonial.userType} at {testimonial.university}
-                      </p>
-                    </div>
-                  </div>
-                  <RatingStars rating={testimonial.rating} />
-                  <p className="mt-4 text-gray-300">
-                    {testimonial.message}
-                  </p>
-                </motion.div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+                    <RatingStars rating={testimonial.rating} />
+                    <p className="mt-4 text-gray-300">
+                      {testimonial.message}
+                    </p>
+                  </motion.div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )}
         </div>
       </section>
 
