@@ -20,8 +20,6 @@ interface SimulationGraphsProps {
   }
 }
 
-const MAX_POINTS = 100
-
 export default function SimulationGraphs({
   tank1Level,
   tank2Level,
@@ -45,15 +43,13 @@ export default function SimulationGraphs({
   // Update data points
   useEffect(() => {
     const updateData = (prevData: number[], newValue: number) => {
-      const newData = [...prevData, newValue]
-      if (newData.length > MAX_POINTS) newData.shift()
-      return newData
+      // No truncation, just accumulate
+      return [...prevData, newValue]
     }
 
     setTime(prev => {
-      const newTime = [...prev, prev.length ? prev[prev.length - 1] + 1 : 0]
-      if (newTime.length > MAX_POINTS) newTime.shift()
-      return newTime
+      // No truncation, just accumulate
+      return [...prev, prev.length ? prev[prev.length - 1] + 1 : 0]
     })
 
     setTank1Data(prev => updateData(prev, tank1Level))
