@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import 'chart.js/auto'
+import { Chart, TooltipItem, Scale } from 'chart.js'
 
 interface SimulationGraphsProps {
   tank1Level: number
@@ -19,23 +20,21 @@ export default function SimulationGraphs({
   pumpFlow,
   setpoint
 }: SimulationGraphsProps) {
-  const [time, setTime] = useState<number[]>([])
-  const [tank1Data, setTank1Data] = useState<number[]>([])
-  const [tank2Data, setTank2Data] = useState<number[]>([])
-  const [outputData, setOutputData] = useState<number[]>([])
-  const [setpointData, setSetpointData] = useState<number[]>([])
-  const [pumpData, setPumpData] = useState<number[]>([])
+  const [time, setTime] = useState<number[]>([0])
+  const [tank1Data, setTank1Data] = useState<number[]>([tank1Level])
+  const [tank2Data, setTank2Data] = useState<number[]>([tank2Level])
+  const [outputData, setOutputData] = useState<number[]>([controllerOutput])
+  const [setpointData, setSetpointData] = useState<number[]>([setpoint])
+  const [pumpData, setPumpData] = useState<number[]>([pumpFlow])
 
   // Update data points
   useEffect(() => {
     const updateData = (prevData: number[], newValue: number) => {
-      // No truncation, just accumulate
-      return [...prevData, newValue]
+      return [...prevData, newValue];
     }
 
     setTime(prev => {
-      // No truncation, just accumulate
-      return [...prev, prev.length ? prev[prev.length - 1] + 1 : 0]
+      return [...prev, prev[prev.length - 1] + 1];
     })
 
     setTank1Data(prev => updateData(prev, tank1Level))
@@ -45,32 +44,84 @@ export default function SimulationGraphs({
     setPumpData(prev => updateData(prev, pumpFlow))
   }, [tank1Level, tank2Level, controllerOutput, pumpFlow, setpoint])
 
-  const minimalisticOptions = {
+  const createChartOptions = (yMax: number) => ({
     responsive: true,
     animation: { duration: 0 } as const,
+    maintainAspectRatio: false,
     elements: {
-      line: { borderWidth: 2 },
-      point: { radius: 0 }
+      line: { 
+        borderWidth: 2,
+        tension: 0.4 
+      },
+      point: { 
+        radius: 0 
+      }
+    },
+    layout: {
+      padding: {
+        left: 15,
+        right: 15,
+        top: 15,
+        bottom: 15
+      }
     },
     scales: {
       x: {
         type: 'linear' as const,
         display: true,
-        grid: { color: 'rgba(255,255,255,0.05)', lineWidth: 1 },
-        ticks: { color: 'rgba(255,255,255,0.25)', font: { size: 10 } }
+        grid: { 
+          color: 'rgba(255,255,255,0.05)', 
+          lineWidth: 1 
+        },
+        ticks: { 
+          color: 'rgba(255,255,255,0.25)', 
+          font: { size: 12 },
+          stepSize: 60
+        },
+        border: {
+          width: 2,
+          color: 'rgba(255,255,255,0.1)'
+        }
       },
       y: {
+        type: 'linear' as const,
         display: true,
-        grid: { color: 'rgba(255,255,255,0.05)', lineWidth: 1 },
-        ticks: { color: 'rgba(255,255,255,0.25)', font: { size: 10 } },
+        grid: { 
+          color: 'rgba(255,255,255,0.05)', 
+          lineWidth: 1,
+          drawTicks: true
+        },
+        ticks: { 
+          color: 'rgba(255,255,255,0.25)', 
+          font: { size: 12 },
+          padding: 10,
+          callback: function(tickValue: number | string) {
+            if (typeof tickValue !== 'number') return tickValue;
+            return yMax <= 10 ? tickValue.toFixed(1) : tickValue.toFixed(0);
+          },
+          stepSize: yMax <= 10 ? 0.5 : 5,
+          autoSkip: false,
+          maxTicksLimit: yMax <= 10 ? 21 : 21
+        },
+        border: {
+          width: 2,
+          color: 'rgba(255,255,255,0.1)'
+        },
         min: 0,
-        max: 10
+        max: yMax,
+        beginAtZero: true
       }
     },
     plugins: {
       legend: {
         display: true,
-        labels: { color: 'rgba(255,255,255,0.7)', font: { size: 12 } },
+        labels: { 
+          color: 'rgba(255,255,255,0.7)', 
+          font: { size: 14 },
+          usePointStyle: true,
+          pointStyle: 'line',
+          padding: 20
+        },
         position: 'top' as const,
       },
       title: {
@@ -82,23 +133,16 @@ export default function SimulationGraphs({
         titleColor: '#fff',
         bodyColor: '#fff',
         borderColor: 'rgba(255,255,255,0.1)',
-        borderWidth: 1
+        borderWidth: 1,
+        padding: 12,
+        callbacks: {
+          label: function(tooltipItem: TooltipItem<"line">) {
+            return `${tooltipItem.dataset.label || ''}: ${tooltipItem.parsed.y.toFixed(2)}`;
+          }
+        }
       }
     }
-  }
-
-  // Minimalistic options for Control Signals graph (0-100 y-axis)
-  const controlSignalsOptions = {
-    ...minimalisticOptions,
-    scales: {
-      ...minimalisticOptions.scales,
-      y: {
-        ...minimalisticOptions.scales.y,
-        min: 0,
-        max: 100
-      }
-    }
-  }
+  })
 
   const tankLevelsData = {
     labels: time,
@@ -108,14 +152,16 @@ export default function SimulationGraphs({
         data: tank1Data,
         borderColor: 'rgb(59, 130, 246)',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        tension: 0.4
+        tension: 0.4,
+        fill: false
       },
       {
         label: 'Tank 2 Level',
         data: tank2Data,
         borderColor: 'rgb(168, 85, 247)',
         backgroundColor: 'rgba(168, 85, 247, 0.1)',
-        tension: 0.4
+        tension: 0.4,
+        fill: false
       },
       {
         label: 'Setpoint',
@@ -123,7 +169,8 @@ export default function SimulationGraphs({
         borderColor: 'rgb(234, 179, 8)',
         backgroundColor: 'rgba(234, 179, 8, 0.1)',
         tension: 0.4,
-        borderDash: [5, 5]
+        borderDash: [5, 5],
+        fill: false
       }
     ]
   }
@@ -136,34 +183,46 @@ export default function SimulationGraphs({
         data: outputData,
         borderColor: 'rgb(59, 130, 246)',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        tension: 0.4
+        tension: 0.4,
+        fill: false
       },
       {
         label: 'Pump Flow',
         data: pumpData,
         borderColor: 'rgb(168, 85, 247)',
         backgroundColor: 'rgba(168, 85, 247, 0.1)',
-        tension: 0.4
+        tension: 0.4,
+        fill: false
       }
     ]
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6">
-        <div className="flex items-center gap-2 mb-4">
+    <div className="space-y-12 w-full max-w-none px-4">
+      <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-8">
+        <div className="flex items-center gap-2 mb-6">
           <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
           <h3 className="text-sm font-medium text-gray-300">Tank Levels</h3>
         </div>
-        <Line data={tankLevelsData} options={minimalisticOptions} />
+        <div className="h-[600px]">
+          <Line 
+            data={tankLevelsData} 
+            options={createChartOptions(10)}
+          />
+        </div>
       </div>
 
-      <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6">
-        <div className="flex items-center gap-2 mb-4">
+      <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-8">
+        <div className="flex items-center gap-2 mb-6">
           <div className="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
           <h3 className="text-sm font-medium text-gray-300">Control Signals</h3>
         </div>
-        <Line data={controlSignalsData} options={controlSignalsOptions} />
+        <div className="h-[600px]">
+          <Line 
+            data={controlSignalsData} 
+            options={createChartOptions(100)}
+          />
+        </div>
       </div>
     </div>
   )
