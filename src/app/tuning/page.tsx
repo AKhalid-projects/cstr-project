@@ -374,8 +374,6 @@ export default function TuningPage() {
                                         controllerOutput={state.controllerOutput}
                                         pumpFlow={state.pumpFlow}
                                         setpoint={state.controller.setpoint}
-                                        controlStrategy={state.controlStrategy}
-                                        pidComponents={state.pidComponents}
                                     />
                                 </div>
                             </Card>

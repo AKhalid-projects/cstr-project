@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import 'chart.js/auto'
-import { ControlStrategy } from '@/lib/types'
 
 interface SimulationGraphsProps {
   tank1Level: number
@@ -11,13 +10,6 @@ interface SimulationGraphsProps {
   controllerOutput: number
   pumpFlow: number
   setpoint: number
-  controlStrategy: ControlStrategy
-  pidComponents?: {
-    proportional: number
-    integral: number
-    derivative: number
-    feedforward?: number
-  }
 }
 
 export default function SimulationGraphs({
@@ -25,9 +17,7 @@ export default function SimulationGraphs({
   tank2Level,
   controllerOutput,
   pumpFlow,
-  setpoint,
-  controlStrategy,
-  pidComponents
+  setpoint
 }: SimulationGraphsProps) {
   const [time, setTime] = useState<number[]>([])
   const [tank1Data, setTank1Data] = useState<number[]>([])
@@ -35,10 +25,6 @@ export default function SimulationGraphs({
   const [outputData, setOutputData] = useState<number[]>([])
   const [setpointData, setSetpointData] = useState<number[]>([])
   const [pumpData, setPumpData] = useState<number[]>([])
-  const [proportionalData, setProportionalData] = useState<number[]>([])
-  const [integralData, setIntegralData] = useState<number[]>([])
-  const [derivativeData, setDerivativeData] = useState<number[]>([])
-  const [feedforwardData, setFeedforwardData] = useState<number[]>([])
 
   // Update data points
   useEffect(() => {
@@ -57,16 +43,7 @@ export default function SimulationGraphs({
     setOutputData(prev => updateData(prev, controllerOutput))
     setSetpointData(prev => updateData(prev, setpoint))
     setPumpData(prev => updateData(prev, pumpFlow))
-
-    if (pidComponents) {
-      setProportionalData(prev => updateData(prev, pidComponents.proportional))
-      setIntegralData(prev => updateData(prev, pidComponents.integral))
-      setDerivativeData(prev => updateData(prev, pidComponents.derivative))
-      if (pidComponents.feedforward !== undefined) {
-        setFeedforwardData(prev => updateData(prev, pidComponents.feedforward!))
-      }
-    }
-  }, [tank1Level, tank2Level, controllerOutput, pumpFlow, setpoint, pidComponents])
+  }, [tank1Level, tank2Level, controllerOutput, pumpFlow, setpoint])
 
   const minimalisticOptions = {
     responsive: true,
