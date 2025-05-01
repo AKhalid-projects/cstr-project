@@ -96,7 +96,9 @@ export default function SimulationGraphs({
     },
     plugins: {
       legend: {
-        display: false
+        display: true,
+        labels: { color: 'rgba(255,255,255,0.7)', font: { size: 12 } },
+        position: 'top' as const,
       },
       title: {
         display: false
