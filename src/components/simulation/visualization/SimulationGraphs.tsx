@@ -72,39 +72,53 @@ export default function SimulationGraphs({
     }
   }, [tank1Level, tank2Level, controllerOutput, pumpFlow, setpoint, pidComponents])
 
-  const commonOptions = {
+  const minimalisticOptions = {
     responsive: true,
     animation: { duration: 0 } as const,
+    elements: {
+      line: { borderWidth: 2 },
+      point: { radius: 0 }
+    },
     scales: {
       x: {
         type: 'linear' as const,
         display: true,
-        grid: { color: 'rgba(255, 255, 255, 0.1)' },
-        ticks: { color: 'rgba(255, 255, 255, 0.5)' }
+        grid: { color: 'rgba(255,255,255,0.05)', lineWidth: 1 },
+        ticks: { color: 'rgba(255,255,255,0.25)', font: { size: 10 } }
       },
       y: {
         display: true,
-        grid: { color: 'rgba(255, 255, 255, 0.1)' },
-        ticks: { color: 'rgba(255, 255, 255, 0.5)' },
-        max: 10,
-        min: 0
+        grid: { color: 'rgba(255,255,255,0.05)', lineWidth: 1 },
+        ticks: { color: 'rgba(255,255,255,0.25)', font: { size: 10 } },
+        min: 0,
+        max: 10
       }
     },
     plugins: {
       legend: {
-        position: 'top' as const,
-        labels: { color: 'rgba(255, 255, 255, 0.7)' }
+        display: false
+      },
+      title: {
+        display: false
+      },
+      tooltip: {
+        enabled: true,
+        backgroundColor: 'rgba(30,30,30,0.9)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 1
       }
     }
   }
 
-  // New: Control Signals graph options with y-axis 0-100
+  // Minimalistic options for Control Signals graph (0-100 y-axis)
   const controlSignalsOptions = {
-    ...commonOptions,
+    ...minimalisticOptions,
     scales: {
-      ...commonOptions.scales,
+      ...minimalisticOptions.scales,
       y: {
-        ...commonOptions.scales.y,
+        ...minimalisticOptions.scales.y,
         min: 0,
         max: 100
       }
@@ -200,7 +214,7 @@ export default function SimulationGraphs({
           <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
           <h3 className="text-sm font-medium text-gray-300">Tank Levels</h3>
         </div>
-        <Line data={tankLevelsData} options={commonOptions} />
+        <Line data={tankLevelsData} options={minimalisticOptions} />
       </div>
 
       <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6">
@@ -217,7 +231,7 @@ export default function SimulationGraphs({
             <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
             <h3 className="text-sm font-medium text-gray-300">PID Components</h3>
           </div>
-          <Line data={pidComponentsData} options={commonOptions} />
+          <Line data={pidComponentsData} options={minimalisticOptions} />
         </div>
       )}
     </div>
