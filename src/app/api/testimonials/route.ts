@@ -6,7 +6,8 @@ export async function GET() {
     const testimonials = await getTestimonials()
     return NextResponse.json({ testimonials })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 })
+    console.error('Error fetching testimonials:', error)
+    return NextResponse.json({ error: 'Failed to fetch testimonials', details: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -16,6 +17,7 @@ export async function POST(request: Request) {
     await addTestimonial(testimonial)
     return NextResponse.json({ message: 'Testimonial added successfully' })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to add testimonial' }, { status: 500 })
+    console.error('Error adding testimonial:', error)
+    return NextResponse.json({ error: 'Failed to add testimonial', details: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 })
   }
 } 

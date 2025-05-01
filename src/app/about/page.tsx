@@ -22,59 +22,6 @@ interface Testimonial {
   university: string
 }
 
-// Initial testimonials
-const initialTestimonials: Testimonial[] = [
-  {
-    name: "Ahmed Al-Sayed",
-    message: "ProcessDynX has transformed how I understand control systems. The interactive simulations make complex concepts tangible and easier to grasp.",
-    rating: 5,
-    userType: "Student",
-    university: "University of Bahrain"
-  },
-  {
-    name: "Dr. Sarah Johnson",
-    message: "An excellent teaching tool that bridges the gap between theory and practice. My students have shown remarkable improvement in understanding PID control concepts.",
-    rating: 5,
-    userType: "Professor",
-    university: "Polytechnic Bahrain"
-  },
-  {
-    name: "Mohammed Hassan",
-    message: "The real-time visualization helps me understand the impact of different control parameters. It's an invaluable tool for learning process control.",
-    rating: 4.4,
-    userType: "Graduate Student",
-    university: "Arabian Gulf University"
-  },
-  {
-    name: "Dr. Ali Al-Qasim",
-    message: "The platform's ability to demonstrate complex control scenarios in real-time has greatly enhanced my teaching methodology. It's an invaluable resource.",
-    rating: 4.8,
-    userType: "Associate Professor",
-    university: "University of Bahrain"
-  },
-  {
-    name: "Fatima Al-Khalifa",
-    message: "As a chemical engineering student, this simulator has been crucial in helping me visualize and understand process dynamics. The interface is intuitive and user-friendly.",
-    rating: 4.7,
-    userType: "Senior Student",
-    university: "Polytechnic Bahrain"
-  },
-  {
-    name: "Dr. James Wilson",
-    message: "The integration of theory and practical application in this platform is outstanding. It's particularly effective for demonstrating the impact of different control strategies.",
-    rating: 4.9,
-    userType: "Visiting Professor",
-    university: "Arabian Gulf University"
-  },
-  {
-    name: "Mariam Al-Dosari",
-    message: "The real-time feedback and interactive nature of the simulator have significantly improved my understanding of control systems. An excellent learning tool!",
-    rating: 4.6,
-    userType: "Graduate Student",
-    university: "University of Bahrain"
-  }
-]
-
 const RatingStars = ({ rating }: { rating: number }) => {
   const fullStars = Math.floor(rating)
   const hasHalfStar = rating % 1 !== 0
