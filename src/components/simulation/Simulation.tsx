@@ -14,9 +14,10 @@ interface SimulationProps {
     setpoint: number;
   };
   systemParameters: SimulationState;
+  controlStrategy: string;
 }
 
-export default function Simulation({ controlParameters, systemParameters }: SimulationProps) {
+export default function Simulation({ controlParameters, systemParameters, controlStrategy }: SimulationProps) {
   const tank1LevelPercent = (systemParameters.tank1.height / systemParameters.tank1.maxHeight) * 100
   const tank2LevelPercent = (systemParameters.tank2.height / systemParameters.tank2.maxHeight) * 100
 
@@ -70,10 +71,12 @@ export default function Simulation({ controlParameters, systemParameters }: Simu
               <span>Ti:</span>
               <span className="font-mono text-purple-400">{controlParameters.ti.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-gray-300">
-              <span>Td:</span>
-              <span className="font-mono text-green-400">{controlParameters.td.toFixed(2)}</span>
-            </div>
+            {controlStrategy !== 'PI' && (
+              <div className="flex justify-between text-gray-300">
+                <span>Td:</span>
+                <span className="font-mono text-green-400">{controlParameters.td.toFixed(2)}</span>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>

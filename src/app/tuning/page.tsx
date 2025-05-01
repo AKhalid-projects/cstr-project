@@ -352,6 +352,7 @@ export default function TuningPage() {
                                 <Simulation 
                                     controlParameters={state.controller}
                                     systemParameters={state}
+                                    controlStrategy={state.controlStrategy}
                                 />
                             </Card>
                         </div>
