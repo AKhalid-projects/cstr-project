@@ -171,40 +171,6 @@ export default function SimulationGraphs({
     ]
   }
 
-  const pidComponentsData = {
-    labels: time,
-    datasets: [
-      {
-        label: 'Proportional',
-        data: proportionalData,
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        tension: 0.4
-      },
-      {
-        label: 'Integral',
-        data: integralData,
-        borderColor: 'rgb(16, 185, 129)',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        tension: 0.4
-      },
-      {
-        label: 'Derivative',
-        data: derivativeData,
-        borderColor: 'rgb(245, 158, 11)',
-        backgroundColor: 'rgba(245, 158, 11, 0.1)',
-        tension: 0.4
-      },
-      ...(pidComponents?.feedforward !== undefined ? [{
-        label: 'Feedforward',
-        data: feedforwardData,
-        borderColor: 'rgb(236, 72, 153)',
-        backgroundColor: 'rgba(236, 72, 153, 0.1)',
-        tension: 0.4
-      }] : [])
-    ]
-  }
-
   return (
     <div className="space-y-6">
       <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6">
@@ -222,16 +188,6 @@ export default function SimulationGraphs({
         </div>
         <Line data={controlSignalsData} options={controlSignalsOptions} />
       </div>
-
-      {controlStrategy !== 'MANUAL' && pidComponents && (
-        <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
-            <h3 className="text-sm font-medium text-gray-300">PID Components</h3>
-          </div>
-          <Line data={pidComponentsData} options={minimalisticOptions} />
-        </div>
-      )}
     </div>
   )
 } 
