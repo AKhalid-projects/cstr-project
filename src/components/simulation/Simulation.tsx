@@ -54,7 +54,7 @@ export default function Simulation({ controlParameters, systemParameters }: Simu
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-gray-300">
               <Target className="w-4 h-4 text-blue-400" />
-              <span>Target: {controlParameters.setpoint.toFixed(1)}%</span>
+              <span>Setpoint: {controlParameters.setpoint.toFixed(1)} m</span>
             </div>
             <div className="flex justify-between text-gray-300">
               <span>Tank 1: {tank1LevelPercent.toFixed(1)}%</span>
