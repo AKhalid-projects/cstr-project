@@ -60,57 +60,6 @@ export interface SimulationState {
 }
 
 /**
- * Calculates the system transfer function H2(s) for PI control
- * @param constants System constants
- * @param kc Controller gain
- * @param ti Integral time constant
- * @param s Complex frequency (default to 0 for steady state)
- * @returns Complex transfer function value
- */
-function calculateH2TransferFunction(
-  constants: SystemConstants, 
-  kc: number, 
-  ti: number, 
-  s: number = 0
-): number {
-  const K = kc;
-  const τI = ti;
-  const τ1 = constants.t1;
-  const τ2 = constants.t2;
-
-  // H2(s) = (K*s + (K/τI)) / (τ1*τ2*s^3 + τ1*s^2 + τ2*s^2 + s + K*s + K/τI)
-  
-  // Numerator: K*s + (K/τI)
-  const numerator = K * s + (K/τI);
-  
-  // Denominator: τ1*τ2*s^3 + τ1*s^2 + τ2*s^2 + s + K*s + K/τI
-  const denominator = 
-    τ1 * τ2 * Math.pow(s, 3) +  // s^3 term
-    τ1 * Math.pow(s, 2) +       // s^2 term from τ1
-    τ2 * Math.pow(s, 2) +       // s^2 term from τ2
-    s +                         // s term
-    K * s +                     // K*s term
-    (K/τI);                     // K/τI term
-
-  return numerator / denominator;
-}
-
-/**
- * Calculates the input signal Y(s) based on input type
- */
-function calculateInputSignal(h2: number, setpoint: number, inputType: 'STEP' | 'RAMP', time: number): number {
-  if (inputType === 'STEP') {
-    // Y(s) = h2 * setpoint * (1/s)
-    // Inverse Laplace: y(t) = h2 * setpoint * u(t)
-    return h2 * setpoint;
-  } else {
-    // Y(s) = h2 * setpoint * (1/s^2)
-    // Inverse Laplace: y(t) = h2 * setpoint * t
-    return h2 * setpoint * time;
-  }
-}
-
-/**
  * Calculates the feedforward term for PID with Feedforward control
  */
 function calculateFeedforwardTerm(constants: SystemConstants, setpoint: number): number {
@@ -122,50 +71,6 @@ function calculateFeedforwardTerm(constants: SystemConstants, setpoint: number):
 }
 
 /**
- * Calculates the system transfer function H2(s) for PID with Feedforward control
- * using the disturbance model
- */
-function calculateH2DisturbanceModel(constants: SystemConstants, kc: number, ti: number, td: number): number {
-  const { k1, k2, k3, t1, t2, t3 } = constants;
-  const K = kc;
-  const τI = ti;
-  const τD = td;
-
-  // First term: (K3*S*(τ1s+1)*(τ2s+1))/((τ3s+1)*[s*(τ1s+1)*(τ2s+1)+(Ks+(K/τI)+K*τD*s^2)])
-  const firstTerm = (k3 * (t1 + 1) * (t2 + 1)) / 
-                   ((t3 + 1) * ((t1 + 1) * (t2 + 1) + (K + (K/τI) + K*τD)));
-
-  // Second term: (k1*k2)/(τ1*τ2*s^3+τ1*s^2+τ2*s^2+s+K*s+K/τI+K*τD*s^2) * -(k3((τ1+τ2)s+1))/(k1*k2*(τ3*s+1))
-  const secondTerm = (k1 * k2) / 
-                    (t1 * t2 + t1 + t2 + 1 + K + K/τI + K*τD) * 
-                    -(k3 * ((t1 + t2) + 1)) / (k1 * k2 * (t3 + 1));
-
-  return firstTerm + secondTerm;
-}
-
-/**
- * Calculates the system transfer function H2(s) for PID with Feedforward control
- * using the process model
- */
-function calculateH2ProcessModel(constants: SystemConstants, kc: number, ti: number, td: number): number {
-  const { k1, k2, k3, t1, t2, t3 } = constants;
-  const K = kc;
-  const τI = ti;
-  const τD = td;
-
-  // First term: (Ks+(K/τI)+K*τD*s^2)/(τ1*τ2*s^3+τ1*s^2+τ2*s^2+s+K*s+K/τI+K*τD*s^2)
-  const firstTerm = (K + K/τI + K*τD) / 
-                   (t1 * t2 + t1 + t2 + 1 + K + K/τI + K*τD);
-
-  // Second term: (k1*k2)/(τ1*τ2*s^3+τ1*s^2+τ2*s^2+s+K*s+K/τI+K*τD*s^2) * -(k3((τ1+τ2)s+1))/(k1*k2*(τ3*s+1))
-  const secondTerm = (k1 * k2) / 
-                    (t1 * t2 + t1 + t2 + 1 + K + K/τI + K*τD) * 
-                    -(k3 * ((t1 + t2) + 1)) / (k1 * k2 * (t3 + 1));
-
-  return firstTerm + secondTerm;
-}
-
-/**
  * Calculates the control output based on the current state and control strategy.
  * Also updates controller state (errorSum and lastError) for feedback control modes.
  * 
@@ -174,10 +79,6 @@ function calculateH2ProcessModel(constants: SystemConstants, kc: number, ti: num
  */
 export function calculateControlOutput(state: SimulationState): SimulationState {
   const constants = calculateSystemConstants(state.tank1, state.tank2);
-  let h2: number;
-  
-  // Calculate input signal Y(s)
-  let y: number;
   let output = 0;
   let newErrorSum = state.controller.errorSum;
   let newLastError = state.controller.lastError;
@@ -197,14 +98,8 @@ export function calculateControlOutput(state: SimulationState): SimulationState 
       };
       
     case 'PID': {
-      // Calculate H2(s)
-      h2 = calculateH2TransferFunction(constants, state.controller.kc, state.controller.ti);
-      
-      // Calculate input signal Y(s)
-      y = calculateInputSignal(h2, state.controller.setpoint, state.inputType, state.time);
-      
-      // Calculate error
-      const error = state.controller.setpoint - y;
+      // Calculate error directly from tank level
+      const error = state.controller.setpoint - state.tank2.height;
       
       // Update controller state
       newErrorSum = state.controller.errorSum + error * TIME_STEP;
@@ -227,16 +122,8 @@ export function calculateControlOutput(state: SimulationState): SimulationState 
     }
       
     case 'PID_FEEDFORWARD': {
-      // Calculate H2(s) based on the selected model
-      h2 = state.feedforwardModel === 'DISTURBANCE' 
-        ? calculateH2DisturbanceModel(constants, state.controller.kc, state.controller.ti, state.controller.td)
-        : calculateH2ProcessModel(constants, state.controller.kc, state.controller.ti, state.controller.td);
-      
-      // Calculate input signal Y(s)
-      y = calculateInputSignal(h2, state.controller.setpoint, state.inputType, state.time);
-      
-      // Calculate error
-      const error = state.controller.setpoint - y;
+      // Calculate error directly from tank level
+      const error = state.controller.setpoint - state.tank2.height;
       
       // Update controller state
       newErrorSum = state.controller.errorSum + error * TIME_STEP;
@@ -263,14 +150,8 @@ export function calculateControlOutput(state: SimulationState): SimulationState 
     }
       
     case 'PI': {
-      // Calculate H2(s)
-      h2 = calculateH2TransferFunction(constants, state.controller.kc, state.controller.ti);
-      
-      // Calculate input signal Y(s)
-      y = calculateInputSignal(h2, state.controller.setpoint, state.inputType, state.time);
-      
-      // Calculate error
-      const error = state.controller.setpoint - y;
+      // Calculate error directly from tank level
+      const error = state.controller.setpoint - state.tank2.height;
       
       // Update controller state
       newErrorSum = state.controller.errorSum + error * TIME_STEP;
