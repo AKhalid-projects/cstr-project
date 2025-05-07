@@ -182,7 +182,7 @@ export default function TuningPage() {
                                                 Control Strategy
                                             </label>
                                             <select
-                                                value={state.controlStrategy}
+                                            value={state.controlStrategy}
                                                 onChange={(e) => updateState({
                                                     controlStrategy: e.target.value as ControlStrategy
                                                 })}
@@ -205,7 +205,7 @@ export default function TuningPage() {
                                                         feedforwardModel: e.target.value as FeedforwardModel
                                                     })}
                                                     className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                >
+                                                    >
                                                     <option value="PROCESS">Process Model</option>
                                                     <option value="DISTURBANCE">Disturbance Model</option>
                                                 </select>
@@ -341,23 +341,23 @@ export default function TuningPage() {
                     {/* Main Content Grid */}
                     <div className="space-y-8">
                         {/* Response Graphs Card - Full Width */}
-                        <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
-                            <div className="p-6 border-b border-white/[0.05]">
-                                <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
-                                    System Response
-                                </h2>
-                            </div>
-                            <div className="p-6">
-                                <SimulationGraphs
-                                    tank1Level={state.tank1.height}
-                                    tank2Level={state.tank2.height}
-                                    controllerOutput={state.controllerOutput}
-                                    pumpFlow={state.pumpFlow}
-                                    setpoint={state.controller.setpoint}
-                                />
-                            </div>
-                        </Card>
+                            <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
+                                <div className="p-6 border-b border-white/[0.05]">
+                                    <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                                        System Response
+                                    </h2>
+                                </div>
+                                <div className="p-6">
+                                    <SimulationGraphs
+                                        tank1Level={state.tank1.height}
+                                        tank2Level={state.tank2.height}
+                                        controllerOutput={state.controllerOutput}
+                                        pumpFlow={state.pumpFlow}
+                                        setpoint={state.controller.setpoint}
+                                    />
+                                </div>
+                            </Card>
 
                         {/* Simulation View Card - Full Width */}
                         <Card className="backdrop-blur-xl bg-white/[0.02] border-white/[0.05] shadow-2xl">
@@ -366,7 +366,7 @@ export default function TuningPage() {
                                     <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
                                     Simulation View
                                 </h2>
-                            </div>
+                        </div>
                             <Simulation 
                                 controlParameters={state.controller}
                                 systemParameters={state}

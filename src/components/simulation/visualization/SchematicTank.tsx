@@ -1,5 +1,7 @@
 'use client'
 
+
+
 interface SchematicTankProps {
   level: number // 0-100
   maxHeight?: number
@@ -13,7 +15,7 @@ export default function SchematicTank({ level, maxHeight = 10, showLevelMarkers 
   return (
     <div className="relative aspect-[1/1.5] w-full max-w-[200px] mx-auto">
       {/* Tank outline */}
-      <div className="absolute inset-0 border-2 border-gray-700/50 rounded-lg">
+      <div className="absolute inset-0 border-2 border-gray-700/50 rounded-lg z-10">
         {/* Water level */}
         <div 
           className="absolute bottom-0 left-0 right-0 bg-blue-400/30 backdrop-blur-sm transition-all duration-300 rounded-b-lg"

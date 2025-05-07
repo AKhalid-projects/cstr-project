@@ -23,9 +23,16 @@ export default function Simulation({ controlParameters, systemParameters, contro
 
   return (
     <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur-sm overflow-hidden">
-      <div className="space-y-8 p-6">
+      <div className="space-y-8 p-6 relative">
+        {/* Overlay circuit image ONCE */}
+        <img
+          src="/circuit.png"
+          alt="Circuit Overlay"
+          className="absolute left-1/2 ml-40 -mt-16 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[1050px] object-contain pointer-events-none z-20"
+          style={{ opacity: 0.7 }}
+        />
         {/* Tank Visualization */}
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 relative z-30">
           {/* Tank 1 */}
           <div className="flex flex-col items-center gap-2">
             <h3 className="text-sm font-medium text-gray-300">Tank 1</h3>
@@ -55,6 +62,9 @@ export default function Simulation({ controlParameters, systemParameters, contro
             </div>
           </div>
         </div>
+
+        {/* Spacer */}
+        <div className="h-8" />
 
         {/* Status Display */}
         <motion.div 
