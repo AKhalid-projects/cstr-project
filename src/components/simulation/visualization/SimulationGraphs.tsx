@@ -101,7 +101,7 @@ export default function SimulationGraphs({
             if (typeof tickValue !== 'number') return tickValue;
             return yMax <= 10 ? tickValue.toFixed(1) : tickValue.toFixed(0);
           },
-          stepSize: yMax <= 10 ? 0.1 : 5,
+          stepSize: yMax <= 10 ? 0.5 : 5,
           autoSkip: false,
           count: yMax <= 10 ? (yMax / 0.1) + 1 : 21,
           maxRotation: 0
@@ -202,13 +202,13 @@ export default function SimulationGraphs({
   }
 
   return (
-    <div className="space-y-12 w-full max-w-none px-4">
-      <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 space-y-4 md:space-x-12 w-full max-w-none px-4">
+      <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-2">
         <div className="flex items-center gap-2 mb-6">
           <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
           <h3 className="text-sm font-medium text-gray-300">Tank Levels</h3>
         </div>
-        <div className="h-[1800px]">
+        <div className="h-[800px] w-[350px] md:w-full -ml-12">
           <Line 
             data={tankLevelsData} 
             options={createChartOptions(10)}
@@ -216,12 +216,12 @@ export default function SimulationGraphs({
         </div>
       </div>
 
-      <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-8">
+      <div className="bg-gray-900/40 backdrop-blur-xl rounded-xl border border-white/[0.05] p-2">
         <div className="flex items-center gap-2 mb-6">
           <div className="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
           <h3 className="text-sm font-medium text-gray-300">Control Signals</h3>
         </div>
-        <div className="h-[1800px]">
+        <div className="h-[800px] w-[350px] md:w-full -ml-12">
           <Line 
             data={controlSignalsData} 
             options={createChartOptions(100)}

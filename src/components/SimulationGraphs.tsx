@@ -169,14 +169,14 @@ const SimulationGraphs = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-4 rounded-lg shadow">
+    <div className="space-y-4">
+      <div className="bg-white p-2 rounded-lg shadow max-w-md mx-auto">
         <Line options={chartOptions} data={tankLevelsData} />
       </div>
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-white p-2 rounded-lg shadow max-w-md mx-auto">
         <Line options={controlOutputOptions} data={controlOutputDataConfig} />
       </div>
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-white p-2 rounded-lg shadow max-w-md mx-auto">
         <Line options={pumpFlowOptions} data={pumpFlowDataConfig} />
       </div>
     </div>
