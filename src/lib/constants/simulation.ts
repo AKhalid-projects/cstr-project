@@ -6,7 +6,7 @@
 export const GRAVITY = 9.81  // Gravity acceleration (m/s²)
 
 // Simulation parameters
-export const TIME_STEP = 1 // Simulation time step (s)
+export const TIME_STEP = 0.5 // Simulation time step (s)
 export const MAX_INFLOW_LPM = 25.4 // Maximum inflow in L/min
 export const NOISE_STD_DEV = 0.4167 // Standard deviation for noise in L/min (1.25/3)
 
