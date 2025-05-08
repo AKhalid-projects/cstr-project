@@ -62,6 +62,15 @@ export interface SimulationState {
 /**
  * Calculates the feedforward term for PID with Feedforward control
  */
+// --- Feedforward Term Calculation ---
+// Equation:
+// FF(setpoint) = -(k3((τ1 + τ2)s + 1))/(k1*k2*(τ3*s + 1)) * setpoint
+// Where:
+//   k1, k2, k3, t1, t2, t3 = system constants derived from tank parameters
+//   setpoint = desired tank level
+//
+// In code:
+// feedforward = (numerator / denominator) * setpoint
 function calculateFeedforwardTerm(constants: SystemConstants, setpoint: number): number {
   // FF = -(k3((τ1 + τ2)s + 1))/(k1*k2*(τ3*s + 1)) * setpoint
   const { k1, k2, k3, t1, t2, t3 } = constants;
@@ -91,6 +100,16 @@ export function calculateControlOutput(state: SimulationState): SimulationState 
   
   switch (state.controlStrategy) {
     case 'MANUAL':
+      // --- Manual Mode ---
+      // In manual mode, the controller output is set directly by the user.
+      // No automatic control calculation is performed.
+      //
+      // Equation:
+      // Controller Output = User Input
+      //
+      // In code:
+      // controllerOutput = state.controllerOutput
+      // pidComponents = undefined
       return {
         ...state,
         controllerOutput: state.controllerOutput,
@@ -98,6 +117,23 @@ export function calculateControlOutput(state: SimulationState): SimulationState 
       };
       
     case 'PID': {
+      // --- PI/PID Controller Output ---
+      // Equation:
+      // Controller Output = Kc * Error + Kc/Ti * ∫Error dt + Kc*Td * d(Error)/dt
+      // (For PI, Td = 0)
+      // Where:
+      //   Error = Setpoint - Tank2 Level
+      //   Kc = Proportional gain
+      //   Ti = Integral time constant
+      //   Td = Derivative time constant
+      //
+      // In code:
+      // proportionalTerm = Kc * error
+      // integralTerm = Kc * errorSum / Ti
+      // derivativeTerm = Kc * Td * (error - lastError) / dt
+      // output = proportionalTerm + integralTerm + derivativeTerm
+      //
+      // For PI, derivativeTerm = 0
       // Calculate error directly from tank level
       const error = state.controller.setpoint - state.tank2.height;
       
@@ -122,6 +158,14 @@ export function calculateControlOutput(state: SimulationState): SimulationState 
     }
       
     case 'PID_FEEDFORWARD': {
+      // --- PID with Feedforward Controller Output ---
+      // Equation:
+      // Controller Output = Kc * Error (1 + 1/(Ti*s) + Td*s) + FF(setpoint)
+      // Where:
+      //   FF(setpoint) = Feedforward term calculated from process model and setpoint
+      //
+      // In code:
+      // output = proportionalTerm + integralTerm + derivativeTerm + feedforward
       // Calculate error directly from tank level
       const error = state.controller.setpoint - state.tank2.height;
       
@@ -132,7 +176,7 @@ export function calculateControlOutput(state: SimulationState): SimulationState 
       // Calculate feedforward term
       const feedforward = calculateFeedforwardTerm(constants, state.controller.setpoint);
       
-      // PID controller with feedforward: K * Error * (1 + 1/(τI*s) + τD*s) + FF * D
+      // PID controller with feedforward: Kc * Error * (1 + 1/(τI*s) + τD*s) + FF
       const proportionalTerm = state.controller.kc * error;
       const integralTerm = state.controller.kc * newErrorSum / state.controller.ti;
       const derivativeTerm = state.controller.kc * state.controller.td * ((error - (state.controller.lastError || 0)) / TIME_STEP);
@@ -141,23 +185,35 @@ export function calculateControlOutput(state: SimulationState): SimulationState 
         proportional: proportionalTerm,
         integral: integralTerm,
         derivative: derivativeTerm,
-        feedforward: feedforward * state.pumpFlow  // Store feedforward term for visualization
+        feedforward: feedforward // Store feedforward term for visualization
       };
       
-      // Add feedforward term multiplied by disturbance (pump flow)
-      output = proportionalTerm + integralTerm + derivativeTerm + (feedforward * state.pumpFlow);
+      // Add feedforward term (not multiplied by disturbance)
+      output = proportionalTerm + integralTerm + derivativeTerm + feedforward;
       break;
     }
       
     case 'PI': {
-      // Calculate error directly from tank level
+      // --- PI Controller Output ---
+      // Equation:
+      // Controller Output = Kc * Error + Kc/Ti * ∫Error dt
+      // Where:
+      //   Error = Setpoint - Tank2 Level
+      //   Kc = Proportional gain
+      //   Ti = Integral time constant
+      //
+      // In code:
+      // proportionalTerm = Kc * error
+      // integralTerm = Kc * errorSum / Ti
+      // output = proportionalTerm + integralTerm
+      // (No derivative term in PI)
       const error = state.controller.setpoint - state.tank2.height;
       
       // Update controller state
       newErrorSum = state.controller.errorSum + error * TIME_STEP;
       newLastError = error;
       
-      // PI controller: K * Error * (1 + 1/(τI*s))
+      // PI controller: Kc * Error * (1 + 1/(τI*s))
       const proportionalTerm = state.controller.kc * error;
       const integralTerm = state.controller.kc * newErrorSum / state.controller.ti;
       
@@ -194,7 +250,27 @@ export function calculateControlOutput(state: SimulationState): SimulationState 
  * @returns Updated simulation state with new tank levels
  */
 export function calculateTankLevels(state: SimulationState): SimulationState {
+  // --- Tank 2 Level Differential Equation ---
+  // Equation:
+  // dh2/dt = (Q1* - Q2* - D*) / A2
+  // Where:
+  //   Q1* = inflow to tank 2 (from tank 1)
+  //   Q2* = outflow from tank 2
+  //   D*  = disturbance (pump flow, m^3/s)
+  //   A2  = cross-sectional area of tank 2
+  //
+  // In code:
+  // dh2_dt = (Q1_star - Q2_star - D_star) / state.tank2.area
   // Calculate inlet flow rate (Qi) in L/min based on controller output
+  // --- Inlet Flow Unit Conversion ---
+  // Equation:
+  // Qi* = Qi (L/min) * (1/6000)
+  // Where:
+  //   Qi* = inlet flow in m^3/s
+  //   Qi  = inlet flow in L/min
+  //
+  // In code:
+  // Qi_star = noisy_Qi * (1/6000)
   const Qi = 25.4 * (state.controllerOutput / 100);
   
   // Add noise to inlet flow if enabled (±1.25 L/min)
@@ -209,6 +285,17 @@ export function calculateTankLevels(state: SimulationState): SimulationState {
   const Qi_star = noisy_Qi * (1/6000);
   
   // Calculate constants for tank outflows
+  // --- Tank Outflow Calculation (Torricelli's Law) ---
+  // Equation:
+  // Q = A * sqrt(2 * g * h)
+  // Where:
+  //   Q = outflow rate (m^3/s)
+  //   A = outlet area (m^2)
+  //   g = gravity (m/s^2)
+  //   h = water height (m)
+  //
+  // In code:
+  // c1 = tank1.outletArea * sqrt(2 * GRAVITY) / sqrt(tank1.height)
   const c1 = state.tank1.outletArea * Math.sqrt(2 * GRAVITY) / Math.sqrt(state.tank1.height);
   const c2 = state.tank2.outletArea * Math.sqrt(2 * GRAVITY) / Math.sqrt(state.tank2.height);
   
@@ -217,6 +304,15 @@ export function calculateTankLevels(state: SimulationState): SimulationState {
   const Q2_star = c2 * state.tank2.height;
   
   // Convert pump flow (D) from L/min to m³/s (D*)
+  // --- Pump Flow Unit Conversion ---
+  // Equation:
+  // D* = D (L/min) * (1/6000)
+  // Where:
+  //   D* = pump flow in m^3/s
+  //   D  = pump flow in L/min
+  //
+  // In code:
+  // D_star = pumpFlow * (1/6000)
   const D_star = Math.min(10, Math.max(0, state.pumpFlow)) * (1/6000);
   
   // Calculate rate of change for both tanks
